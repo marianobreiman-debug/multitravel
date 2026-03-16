@@ -1,0 +1,45 @@
+.switchBtn {
+  display:    inline-flex;
+  align-items: center;
+  background: none;
+  border:     none;
+  padding:    0;
+  cursor:     pointer;
+}
+
+.switchBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.track {
+  display:         flex;
+  align-items:     center;
+  width:           56px;
+  height:          32px;
+  padding:         0 4px;
+  border-radius:   var(--radius-switch); /* 16px */
+  transition:      background-color 200ms ease;
+}
+
+/* ── Estados del track ──────────────────────────────────── */
+.trackOff {
+  background-color: var(--color-grey-200);   /* #CACACA */
+  justify-content:  flex-start;
+}
+
+.trackOn {
+  background-color: var(--color-primary-blue-800); /* #0D4E88 */
+  justify-content:  flex-end;
+}
+
+/* ── Thumb ──────────────────────────────────────────────── */
+.thumb {
+  width:         24px;
+  height:        24px;
+  border-radius: 12px;
+  background-color: var(--color-grey-white);
+  box-shadow:    var(--shadow-sm);
+  flex-shrink:   0;
+  transition:    transform 200ms ease;
+}

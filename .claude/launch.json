@@ -1,0 +1,30 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "lorien-ds",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["node_modules/next/dist/bin/next", "dev", "--port", "3000"],
+      "port": 3000,
+      "cwd": "C:/Multitravel"
+    },
+    {
+      "name": "lorien-showcase",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-e", "const h=require('http'),fs=require('fs'),p=require('path');h.createServer((q,r)=>{let f=p.join('C:/Multitravel',q.url==='/'?'showcase.html':q.url);try{r.writeHead(200,{'Content-Type':'text/html'});fs.createReadStream(f).pipe(r)}catch{r.writeHead(404);r.end()}}).listen(3333)"],
+      "port": 3333
+    },
+    {
+      "name": "modal-showcase",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["server.js"],
+      "port": 3456
+    },
+    {
+      "name": "figma-connect-publish",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["node_modules/@figma/code-connect/bin/figma", "connect", "publish"],
+      "port": 0
+    }
+  ]
+}

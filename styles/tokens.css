@@ -1,0 +1,216 @@
+/**
+ * Lorien Design System — CSS Custom Properties
+ * Fuente: Figma https://www.figma.com/design/awAiQ74drBGZImHlXtIdPN/Lorien?node-id=5915-54298
+ *
+ * Importar en el layout/globals de Next.js:
+ *   import '@/styles/tokens.css';
+ */
+
+:root {
+
+  /* ═══════════════════════════════════════════
+     PRIMARY BLUE
+  ═══════════════════════════════════════════ */
+  --blue-50:   #f5faff;
+  --blue-100:  #eaf3ff;
+  --blue-200:  #dfeeff;
+  --blue-250:  #bddbff;
+  --blue-300:  #71b6f2;
+  --blue-400:  #2a8bfe;
+  --blue-500:  #267de5;
+  --blue-600:  #226fcb;
+  --blue-800:  #0d4e88;  /* ← Usafa — token principal de marca */
+  --blue-900:  #00325d;  /* ← Dark Usafa */
+  --blue-915:  #082f52;
+  --blue-925:  #06233d;
+  --blue-950:  #051b30;
+
+  /* ═══════════════════════════════════════════
+     PRIMARY RED
+  ═══════════════════════════════════════════ */
+  --red-50:    #fff0f1;
+  --red-100:   #fde6eb;
+  --red-200:   #fddae1;
+  --red-300:   #fab2c2;
+  --red-400:   #ff5c7f;  /* ← Pastel Crimson */
+  --red-500:   #ff2c4e;
+  --red-600:   #ef0539;  /* ← Normal — token principal */
+  --red-700:   #df0032;
+  --red-725:   #bf042e;
+  --red-800:   #8f0322;
+  --red-900:   #85001d;
+  --red-925:   #6c021a;
+  --red-950:   #540214;
+
+  /* ═══════════════════════════════════════════
+     SUCCESS
+  ═══════════════════════════════════════════ */
+  --success-50:   #f3fcf3;
+  --success-100:  #defade;
+  --success-200:  #c0f3bf;
+  --success-300:  #8fe78e;
+  --success-400:  #55d355;
+  --success-500:  #2eb92e;
+  --success-600:  #23a423;  /* ← Normal */
+  --success-700:  #1d781d;
+  --success-800:  #1c5f1c;
+  --success-900:  #305030;  /* ← Dark */
+  --success-950:  #082b0a;
+
+  /* ═══════════════════════════════════════════
+     INFORMATIVE
+  ═══════════════════════════════════════════ */
+  --info-50:   #eaf4fc;
+  --info-100:  #daf3ff;
+  --info-200:  #bdebff;
+  --info-300:  #8fe0ff;
+  --info-400:  #5accff;
+  --info-500:  #34b1fd;
+  --info-600:  #2196f3;  /* ← Normal */
+  --info-700:  #167bdf;
+  --info-800:  #1863b5;
+  --info-900:  #1a548e;
+  --info-950:  #064559;
+
+  /* ═══════════════════════════════════════════
+     WARNING
+  ═══════════════════════════════════════════ */
+  --warning-50:   #fff8ed;
+  --warning-100:  #fff2d4;
+  --warning-200:  #ffe2a8;
+  --warning-300:  #ffcc70;
+  --warning-400:  #ffaa37;
+  --warning-500:  #ff941a;  /* ← Normal */
+  --warning-600:  #f07306;
+  --warning-700:  #c75707;
+  --warning-800:  #9e440e;
+  --warning-900:  #59401b;
+  --warning-950:  #451b05;
+
+  /* ═══════════════════════════════════════════
+     DESTRUCTIVE
+  ═══════════════════════════════════════════ */
+  --destructive-50:   #feeceb;
+  --destructive-100:  #ffe3e1;
+  --destructive-200:  #ffccc8;
+  --destructive-300:  #ffa8a2;
+  --destructive-400:  #fc776d;
+  --destructive-500:  #f44336;  /* ← Normal */
+  --destructive-600:  #e22d20;
+  --destructive-700:  #be2217;
+  --destructive-800:  #9d2017;
+  --destructive-900:  #82211a;
+  --destructive-950:  #551713;
+
+  /* ═══════════════════════════════════════════
+     GREYSCALE
+  ═══════════════════════════════════════════ */
+  --grey-white:     #ffffff;
+  --grey-grey:      #fcfcfc;
+  --grey-blue:      #f4f6f8;
+  --grey-50:        #f8f8f8;
+  --grey-75:        #f5f5f5;
+  --grey-100:       #dfdfdf;
+  --grey-200:       #cacaca;
+  --grey-300:       #b6b6b6;
+  --grey-400:       #a1a1a1;
+  --grey-500:       #8d8d8d;
+  --grey-600:       #797878;
+  --grey-700:       #646464;
+  --grey-800:       #504f4f;
+  --grey-900:       #3b3b3b;
+  --grey-950:       #272626;  /* ← Black */
+  --grey-special-01: #f1f3f6;
+
+  /* ═══════════════════════════════════════════
+     GRADIENTS
+  ═══════════════════════════════════════════ */
+  --gradient-blue-01:  linear-gradient(90deg, #0d4e88 0%, #2a8bfe 100%);
+  --gradient-blue-02:  linear-gradient(90deg, #051b30 0%, #0d4e88 100%);
+  --gradient-red-01:   linear-gradient(90deg, #ef0539 0%, #ff5c7f 100%);
+  --gradient-grey-01:  linear-gradient(90deg, #cacaca 0%, #f5f5f5 100%);
+  --gradient-duo-01:   linear-gradient(90deg, #226fcb 0%, #ef0539 100%);
+
+  /* ═══════════════════════════════════════════
+     ALIASES — Tokens semánticos usados en componentes
+  ═══════════════════════════════════════════ */
+  --color-brand:         var(--blue-800);
+  --color-brand-dark:    var(--blue-900);
+  --color-brand-light:   var(--blue-100);
+  --color-accent:        var(--red-600);
+  --color-accent-light:  var(--red-400);
+  --color-success:       var(--success-600);
+  --color-success-bg:    var(--success-100);
+  --color-info:          var(--info-600);
+  --color-info-bg:       var(--info-100);
+  --color-warning:       var(--warning-500);
+  --color-warning-bg:    var(--warning-50);
+  --color-danger:        var(--destructive-500);
+  --color-danger-bg:     var(--destructive-50);
+  --color-text:          var(--grey-950);
+  --color-text-secondary: var(--grey-800);
+  --color-text-tertiary: var(--grey-600);
+  --color-text-disabled: var(--grey-400);
+  --color-bg:            var(--grey-white);
+  --color-bg-subtle:     var(--grey-grey);
+  --color-bg-muted:      var(--grey-blue);
+  --color-border:        var(--grey-200);
+  --color-border-strong: var(--grey-400);
+
+  /* ═══════════════════════════════════════════
+     TYPOGRAPHY
+  ═══════════════════════════════════════════ */
+  --font-nunito: "Nunito", sans-serif;
+  --font-outfit: "Outfit", sans-serif;
+
+  --fw-regular:  400;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+  --fw-bold:     700;
+
+  --fs-xs:  12px;
+  --fs-sm:  14px;
+  --fs-md:  16px;
+  --fs-lg:  18px;
+  --fs-xl:  20px;
+  --fs-2xl: 24px;
+
+  --lh-tight:   16px;
+  --lh-snug:    18px;
+  --lh-normal:  20px;
+  --lh-relaxed: 26px;
+  --lh-loose:   30px;
+
+  /* ═══════════════════════════════════════════
+     SPACING
+  ═══════════════════════════════════════════ */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-7:  28px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* ═══════════════════════════════════════════
+     BORDER RADIUS
+  ═══════════════════════════════════════════ */
+  --radius-none:   0px;
+  --radius-sm:     4px;
+  --radius-md:     8px;
+  --radius-input:  12px;
+  --radius-card:   16px;
+  --radius-switch: 16px;
+  --radius-pill:   32px;
+  --radius-full:   9999px;
+
+  /* ═══════════════════════════════════════════
+     SHADOWS
+  ═══════════════════════════════════════════ */
+  --shadow-sm:      0px 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-blue-lg: 0px 0px 30px rgba(13, 78, 136, 0.10);
+}

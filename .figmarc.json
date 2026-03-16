@@ -1,0 +1,9 @@
+{
+  "codeConnect": {
+    "include": ["components/**/*.figma.tsx"],
+    "parser": "react",
+    "importPaths": {
+      "components/*": "@lorien/components"
+    }
+  }
+}

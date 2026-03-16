@@ -1,0 +1,101 @@
+.wrapper {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-1);
+  width:          100%;
+}
+
+.field {
+  display:          flex;
+  align-items:      center;
+  gap:              var(--space-2);       /* 6px en Figma → usamos --space-2 (8px) */
+  padding:          11px var(--space-4);  /* match Figma: 11px 16px */
+  background-color: var(--color-grey-white);
+  border:           1px solid var(--color-primary-blue-800);
+  border-radius:    var(--radius-input);  /* 12px */
+  transition:       border-color 150ms ease, box-shadow 150ms ease;
+  width:            100%;
+  box-sizing:       border-box;
+}
+
+.field:focus-within {
+  box-shadow: 0 0 0 3px rgba(13, 78, 136, 0.15);
+  outline:    none;
+}
+
+.field.error {
+  border-color: var(--color-primary-red-600);
+}
+
+.field.disabled {
+  background-color: var(--color-grey-50);
+  border-color:     var(--color-grey-200);
+  cursor:           not-allowed;
+}
+
+.icon {
+  flex-shrink: 0;
+  width:       24px;
+  height:      24px;
+  color:       var(--color-grey-800);
+  display:     flex;
+  align-items: center;
+}
+
+/* ── Bloque de texto doble (label + value) ─────────────── */
+.textBlock {
+  display:        flex;
+  flex-direction: column;
+  flex:           1;
+  min-width:      0;
+  gap:            2px;
+}
+
+.label {
+  font-family:  var(--font-nunito);
+  font-size:    var(--fs-xs);           /* 12px */
+  font-weight:  var(--fw-medium);
+  line-height:  var(--lh-tight);
+  color:        var(--color-grey-800);
+  white-space:  nowrap;
+  overflow:     hidden;
+  text-overflow: ellipsis;
+}
+
+.value {
+  font-family:  var(--font-nunito);
+  font-size:    var(--fs-sm);           /* 14px */
+  font-weight:  var(--fw-semibold);
+  line-height:  var(--lh-normal);
+  color:        var(--color-grey-950);
+  white-space:  nowrap;
+  overflow:     hidden;
+  text-overflow: ellipsis;
+}
+
+/* Input nativo invisible — accesibilidad */
+.nativeInput {
+  position:   absolute;
+  opacity:    0;
+  width:      0;
+  height:     0;
+  pointer-events: none;
+}
+
+.chevron {
+  flex-shrink: 0;
+  width:       24px;
+  height:      24px;
+  color:       var(--color-grey-800);
+  display:     flex;
+  align-items: center;
+}
+
+/* ── Mensaje de error ──────────────────────────────────── */
+.errorMsg {
+  font-family: var(--font-nunito);
+  font-size:   var(--fs-xs);
+  font-weight: var(--fw-medium);
+  color:       var(--color-primary-red-600);
+  line-height: var(--lh-tight);
+}
