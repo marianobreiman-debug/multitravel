@@ -4,8 +4,8 @@
     {
       "name": "lorien-ds",
       "runtimeExecutable": "node",
-      "runtimeArgs": ["node_modules/next/dist/bin/next", "dev", "--port", "3000"],
-      "port": 3000,
+      "runtimeArgs": ["node_modules/next/dist/bin/next", "dev", "--port", "3002"],
+      "port": 3002,
       "cwd": "C:/Multitravel"
     },
     {
