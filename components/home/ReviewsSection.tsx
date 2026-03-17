@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 const REVIEWS = [
   {
@@ -37,6 +37,10 @@ const REVIEWS = [
   },
 ];
 
+const GAP             = 16;
+const VISIBLE_DESKTOP = 4;
+const VISIBLE_MOBILE  = 1;
+
 function StarRating({ count }: { count: number }) {
   return (
     <div className="flex gap-0.5">
@@ -50,14 +54,35 @@ function StarRating({ count }: { count: number }) {
 }
 
 export function ReviewsSection() {
-  const [current, setCurrent] = useState(0);
+  const [current, setCurrent]   = useState(0);
+  const [cardW, setCardW]       = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const outerRef                = useRef<HTMLDivElement>(null);
 
-  const prev = () => setCurrent((c) => Math.max(0, c - 1));
-  const next = () => setCurrent((c) => Math.min(REVIEWS.length - 1, c + 1));
+  useEffect(() => {
+    const calc = () => {
+      if (!outerRef.current) return;
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      const totalW = outerRef.current.offsetWidth;
+      const vis    = mobile ? VISIBLE_MOBILE : VISIBLE_DESKTOP;
+      setCardW((totalW - GAP * (vis - 1)) / vis);
+    };
+    calc();
+    window.addEventListener('resize', calc);
+    return () => window.removeEventListener('resize', calc);
+  }, []);
+
+  const maxIndex   = isMobile ? REVIEWS.length - 1 : 0;
+  const translateX = current * (cardW + GAP);
+  const effectiveW = cardW > 0 ? cardW : undefined;
+
+  const prev = () => setCurrent(c => Math.max(0, c - 1));
+  const next = () => setCurrent(c => Math.min(maxIndex, c + 1));
 
   return (
     <section className="py-16 bg-[#F8FAFC]">
-      <div className="max-w-[1280px] mx-auto px-6">
+      <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
@@ -82,8 +107,9 @@ export function ReviewsSection() {
           </div>
         </div>
 
-        {/* Cards row */}
+        {/* Carousel */}
         <div className="relative">
+          {/* Arrow left */}
           <button
             onClick={prev}
             disabled={current === 0}
@@ -94,41 +120,73 @@ export function ReviewsSection() {
             </svg>
           </button>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {REVIEWS.map((review, idx) => (
-              <div
-                key={idx}
-                className="bg-white rounded-2xl p-5 shadow-card border border-gray-100 flex flex-col gap-3"
-              >
-                {/* Top: avatar + name + rating */}
-                <div className="flex items-start gap-3">
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-white text-xs font-black flex-shrink-0"
-                    style={{ background: review.avatarBg }}
-                  >
-                    {review.avatar}
+          {/* Track */}
+          <div ref={outerRef} style={{ overflow: 'hidden' }}>
+            <div
+              style={{
+                display:    'flex',
+                gap:        GAP,
+                transition: 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+                transform:  `translateX(-${translateX}px)`,
+              }}
+            >
+              {REVIEWS.map((review, idx) => (
+                <div
+                  key={idx}
+                  className="bg-white rounded-2xl p-5 shadow-card border border-gray-100 flex flex-col gap-3 flex-shrink-0"
+                  style={{ width: effectiveW }}
+                >
+                  {/* Top: avatar + name + rating */}
+                  <div className="flex items-start gap-3">
+                    <div
+                      className="w-10 h-10 rounded-full flex items-center justify-center text-white text-xs font-black flex-shrink-0"
+                      style={{ background: review.avatarBg }}
+                    >
+                      {review.avatar}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-gray-900 font-bold text-sm truncate">{review.name}</p>
+                      <StarRating count={review.rating} />
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-gray-900 font-bold text-sm truncate">{review.name}</p>
-                    <StarRating count={review.rating} />
-                  </div>
+                  {/* Review text */}
+                  <p className="text-gray-600 text-sm leading-relaxed flex-1">"{review.text}"</p>
+                  <p className="text-gray-400 text-xs font-medium">{review.date}</p>
                 </div>
-                {/* Review text */}
-                <p className="text-gray-600 text-sm leading-relaxed flex-1">"{review.text}"</p>
-                <p className="text-gray-400 text-xs font-medium">{review.date}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
 
+          {/* Arrow right */}
           <button
             onClick={next}
-            disabled={current >= REVIEWS.length - 1}
+            disabled={current >= maxIndex}
             className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white border border-gray-200 rounded-full shadow-card flex items-center justify-center hover:shadow-card-lg transition-all disabled:opacity-30 disabled:cursor-not-allowed"
           >
             <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
             </svg>
           </button>
+        </div>
+
+        {/* Dots */}
+        <div className="flex justify-center gap-2 mt-6">
+          {REVIEWS.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrent(i)}
+              style={{
+                borderRadius: 24,
+                border:       'none',
+                cursor:       'pointer',
+                padding:      0,
+                transition:   'all 0.25s',
+                width:        i === current ? 20 : 10,
+                height:       10,
+                background:   i === current ? '#226FCB' : '#D1D5DB',
+              }}
+            />
+          ))}
         </div>
       </div>
     </section>

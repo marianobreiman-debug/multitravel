@@ -1,0 +1,15 @@
+/* ─── Inner wrapper ──────────────────────────────────────────────────────────── */
+.innerWrap {
+  max-width: 1240px;
+  width: calc(100% - 126px);
+  margin: 0 auto;
+}
+
+/* ─── Mobile (≤ 768px) ───────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .innerWrap {
+    width: 100%;
+    padding: 0 16px;
+    box-sizing: border-box;
+  }
+}

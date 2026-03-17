@@ -1,0 +1,92 @@
+/* ─── Inner nav wrapper ─────────────────────────────────────────────────── */
+.navInner {
+  max-width: 1240px;
+  width: calc(100% - 126px);
+  margin: 0 auto;
+  padding: 12px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ─── Logo ──────────────────────────────────────────────────────────────── */
+.logoWrap {
+  position: relative;
+  width: 237.36px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+/* ─── Buttons ────────────────────────────────────────────────────────────── */
+.contactBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 40px;
+  padding: 8px 16px;
+  border-radius: 48px;
+  border: 1px solid #226FCB;
+  background: #FFFFFF;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.profileBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 40px;
+  width: 137px;
+  padding: 8px 16px;
+  border-radius: 80px;
+  border: 1px solid #DF0032;
+  background: transparent;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.btnLabel {
+  font-family: 'Outfit', sans-serif;
+  white-space: nowrap;
+}
+
+/* ─── Mobile (≤ 768px) ──────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+
+  .navInner {
+    width: 100%;
+    padding: 12px 16px;
+    box-sizing: border-box;
+  }
+
+  /* Logo scales from 32px → 24px height, width proportional */
+  .logoWrap {
+    width: 178px;   /* 237.36 × (24 / 32) = 178.02 */
+    height: 24px;
+  }
+
+  /* Hide all text labels */
+  .btnLabel {
+    display: none;
+  }
+
+  /* Headset button → compact 32×32 circle */
+  .contactBtn {
+    width: 32px;
+    height: 32px;
+    padding: 6px;
+    border-width: 1.8px;
+    gap: 0;
+  }
+
+  /* Profile button → bare 32×32 icon */
+  .profileBtn {
+    width: 32px;
+    height: 32px;
+    padding: 4px;
+    gap: 0;
+    border: none;
+  }
+}

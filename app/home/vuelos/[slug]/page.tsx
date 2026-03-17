@@ -4,6 +4,7 @@ import { Header } from '@/components/home/Header';
 import { HeroSearch } from '@/components/home/HeroSearch';
 import { PageTransition } from '@/components/home/PageTransition';
 import { CountryLanding } from '@/components/home/vuelos/CountryLanding';
+import pageStyles from '@/components/home/vuelos/vuelos.module.css';
 
 interface Props {
   params: { slug: string };
@@ -31,17 +32,12 @@ export default function CountryPage({ params }: Props) {
       <HeroSearch
         heroImage={country.heroImage}
         breadcrumb={breadcrumb}
+        heroTitle={`Vuelos baratos a ${country.name}`}
+        compactMobileSearch={true}
       />
 
       <PageTransition>
-        <main
-          style={{
-            maxWidth: 1240,
-            width:    'calc(100% - 126px)',
-            margin:   '0 auto',
-            padding:  '48px 0 80px',
-          }}
-        >
+        <main className={pageStyles.pageMain}>
           {/* Back link */}
           <a
             href="/home"

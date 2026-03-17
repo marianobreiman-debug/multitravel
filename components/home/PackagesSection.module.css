@@ -1,0 +1,43 @@
+/* ─── Inner wrapper ──────────────────────────────────────────────────────────── */
+.innerWrap {
+  max-width: 1240px;
+  width: calc(100% - 126px);
+  margin: 0 auto;
+}
+
+/* ─── Card layout ────────────────────────────────────────────────────────────── */
+.card {
+  /* layout controlled by inline styles on desktop */
+}
+
+.cardImage {
+  /* layout controlled by inline styles on desktop */
+}
+
+/* ─── Mobile (≤ 768px) ───────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .innerWrap {
+    width: 100%;
+    padding: 0 16px;
+    box-sizing: border-box;
+  }
+
+  /* Vertical card: image top, content bottom */
+  .card {
+    flex-direction: column !important;
+    height: auto !important;
+    border-radius: 16px !important;
+  }
+
+  /* Image fills full card width, fixed height */
+  .cardImage {
+    width: 100% !important;
+    height: 190px !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Reduce section top padding on mobile */
+  .section {
+    padding: 40px 0 !important;
+  }
+}

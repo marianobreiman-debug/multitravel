@@ -1,4 +1,5 @@
 import type { Country } from '@/data/countries';
+import styles from './CountryLanding.module.css';
 
 // ─── Destination card ─────────────────────────────────────────────────────────
 
@@ -155,7 +156,7 @@ export function CountryLanding({ country }: Props) {
   return (
     <div>
       {/* Header */}
-      <div style={{ marginBottom: 40 }}>
+      <div className={styles.header}>
         <span
           style={{
             fontFamily:    "'Outfit', sans-serif",
@@ -199,13 +200,7 @@ export function CountryLanding({ country }: Props) {
       </div>
 
       {/* Destination cards grid */}
-      <div
-        style={{
-          display:             'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap:                 24,
-        }}
-      >
+      <div className={styles.grid}>
         {country.destinations.map((card) => (
           <DestCard key={card.destinationSlug} card={card} countrySlug={country.slug} />
         ))}

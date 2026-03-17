@@ -1,5 +1,10 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+import styles from './PackagesSection.module.css';
+
+const PKG_GAP = 16;
+
 // ─── Icons (inline SVG, vuesax linear 16×16) ────────────────────────────────
 
 function MoonIcon() {
@@ -205,6 +210,7 @@ const PACKAGES: Pkg[] = [
 function PackageCard({ pkg }: { pkg: Pkg }) {
   return (
     <div
+      className={styles.card}
       style={{
         display:       'flex',
         flexDirection: 'row',
@@ -215,7 +221,7 @@ function PackageCard({ pkg }: { pkg: Pkg }) {
       }}
     >
       {/* ── Image panel ───────────────────────────────────────────────────── */}
-      <div style={{ width: 195, flexShrink: 0, position: 'relative' }}>
+      <div className={styles.cardImage} style={{ width: 195, flexShrink: 0, position: 'relative' }}>
         <img
           src={pkg.image}
           alt={pkg.destination}
@@ -461,8 +467,32 @@ function PackageCard({ pkg }: { pkg: Pkg }) {
 // ─── Section ─────────────────────────────────────────────────────────────────
 
 export function PackagesSection() {
+  const [active, setActive]     = useState(0);
+  const [cardW, setCardW]       = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const calc = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      // 16px padding each side → card fills full container width
+      if (mobile) setCardW(window.innerWidth - 32);
+    };
+    calc();
+    window.addEventListener('resize', calc);
+    return () => window.removeEventListener('resize', calc);
+  }, []);
+
+  const maxIndex   = PACKAGES.length - 1;
+  const translateX = active * (cardW + PKG_GAP);
+
+  const prev = () => setActive(a => Math.max(0, a - 1));
+  const next = () => setActive(a => Math.min(maxIndex, a + 1));
+
+  const sectionPadding = isMobile ? '40px 0 32px' : '72px 0';
+
   return (
-    <section style={{ padding: '72px 0', background: '#FFFFFF' }}>
+    <section style={{ padding: sectionPadding, background: '#FFFFFF' }}>
       <style>{`
         .packages-grid {
           display: grid;
@@ -474,15 +504,9 @@ export function PackagesSection() {
         }
       `}</style>
 
-      <div
-        style={{
-          maxWidth: 1240,
-          width:    'calc(100% - 126px)',
-          margin:   '0 auto',
-        }}
-      >
+      <div className={styles.innerWrap}>
         {/* Header */}
-        <div style={{ marginBottom: 40 }}>
+        <div style={{ marginBottom: isMobile ? 24 : 40 }}>
           <span
             style={{
               fontFamily:    "'Outfit', sans-serif",
@@ -502,8 +526,8 @@ export function PackagesSection() {
             style={{
               fontFamily:    "'Outfit', sans-serif",
               fontWeight:    800,
-              fontSize:      32,
-              lineHeight:    '40px',
+              fontSize:      isMobile ? 22 : 32,
+              lineHeight:    isMobile ? '30px' : '40px',
               letterSpacing: '-0.32px',
               color:         '#272626',
               margin:        0,
@@ -515,7 +539,7 @@ export function PackagesSection() {
             style={{
               fontFamily: "'Outfit', sans-serif",
               fontWeight: 400,
-              fontSize:   16,
+              fontSize:   isMobile ? 14 : 16,
               lineHeight: '24px',
               color:      '#8D8D8D',
               margin:     '8px 0 0',
@@ -525,12 +549,103 @@ export function PackagesSection() {
           </p>
         </div>
 
-        {/* 2-col × 3-row grid */}
-        <div className="packages-grid">
-          {PACKAGES.map((pkg) => (
-            <PackageCard key={pkg.destination} pkg={pkg} />
-          ))}
-        </div>
+        {/* ── Mobile: 1-card carousel ─────────────────────────────────────── */}
+        {isMobile ? (
+          <>
+            <div style={{ overflow: 'hidden' }}>
+              <div
+                style={{
+                  display:    'flex',
+                  gap:        PKG_GAP,
+                  transition: 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+                  transform:  `translateX(-${translateX}px)`,
+                }}
+              >
+                {PACKAGES.map((pkg) => (
+                  <div key={pkg.destination} style={{ width: cardW > 0 ? cardW : '100%', flexShrink: 0 }}>
+                    <PackageCard pkg={pkg} />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Dots + counter */}
+            <div
+              style={{
+                display:        'flex',
+                justifyContent: 'center',
+                alignItems:     'center',
+                gap:            6,
+                marginTop:      16,
+              }}
+            >
+              {PACKAGES.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActive(i)}
+                  style={{
+                    border:       'none',
+                    borderRadius: 24,
+                    cursor:       'pointer',
+                    padding:      0,
+                    transition:   'all 0.25s',
+                    width:        i === active ? 20 : 10,
+                    height:       10,
+                    background:   i === active ? '#226FCB' : '#CACACA',
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* Prev / Next buttons below dots */}
+            <div
+              style={{
+                display:        'flex',
+                justifyContent: 'center',
+                gap:            12,
+                marginTop:      12,
+              }}
+            >
+              <button
+                onClick={prev}
+                disabled={active === 0}
+                style={{
+                  width: 40, height: 40, borderRadius: '50%',
+                  border: '1.5px solid #CACACA', background: '#FFFFFF',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: active === 0 ? 'not-allowed' : 'pointer',
+                  opacity: active === 0 ? 0.35 : 1,
+                }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M15 18l-6-6 6-6" stroke="#226FCB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+              <button
+                onClick={next}
+                disabled={active >= maxIndex}
+                style={{
+                  width: 40, height: 40, borderRadius: '50%',
+                  border: '1.5px solid #CACACA', background: '#FFFFFF',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: active >= maxIndex ? 'not-allowed' : 'pointer',
+                  opacity: active >= maxIndex ? 0.35 : 1,
+                }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M9 18l6-6-6-6" stroke="#226FCB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          </>
+        ) : (
+          /* ── Desktop: 2-col × 3-row grid ──────────────────────────────── */
+          <div className="packages-grid">
+            {PACKAGES.map((pkg) => (
+              <PackageCard key={pkg.destination} pkg={pkg} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

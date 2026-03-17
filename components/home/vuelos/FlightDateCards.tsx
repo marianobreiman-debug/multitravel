@@ -1,6 +1,7 @@
 'use client';
 
 import type { FlightDateOffer } from '@/data/destinations';
+import styles from './FlightDateCards.module.css';
 
 // ─── Airline logo placeholder (IATA code styled badge) ───────────────────────
 
@@ -267,14 +268,7 @@ interface Props {
 
 export function FlightDateCards({ offers, destination }: Props) {
   return (
-    <div
-      style={{
-        display:               'grid',
-        gridTemplateColumns:   'repeat(3, 1fr)',
-        gap:                   20,
-        marginBottom:          56,
-      }}
-    >
+    <div className={styles.grid}>
       {offers.map((offer) => (
         <FlightCard key={offer.id} offer={offer} destination={destination} />
       ))}

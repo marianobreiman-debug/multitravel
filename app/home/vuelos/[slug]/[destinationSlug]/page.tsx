@@ -6,6 +6,7 @@ import { HeroSearch } from '@/components/home/HeroSearch';
 import { FlightDateCards } from '@/components/home/vuelos/FlightDateCards';
 import { DestinationContent } from '@/components/home/vuelos/DestinationContent';
 import { PageTransition } from '@/components/home/PageTransition';
+import pageStyles from '@/components/home/vuelos/vuelos.module.css';
 
 interface Props {
   params: { slug: string; destinationSlug: string };
@@ -35,17 +36,12 @@ export default function VuelosDestinationPage({ params }: Props) {
         initialOrigin="Buenos Aires"
         initialDestination={dest.destination}
         breadcrumb={dest.breadcrumb}
+        heroTitle={`Vuelos baratos a ${dest.destination}`}
+        compactMobileSearch={true}
       />
 
       <PageTransition>
-        <main
-          style={{
-            maxWidth: 1240,
-            width:    'calc(100% - 126px)',
-            margin:   '0 auto',
-            padding:  '48px 0 80px',
-          }}
-        >
+        <main className={pageStyles.pageMain}>
           {/* Back links */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 40 }}>
             <a

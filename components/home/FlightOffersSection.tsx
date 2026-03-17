@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import styles from './FlightOffersSection.module.css';
 
 // ─── Icons ───────────────────────────────────────────────────────────────────
 
@@ -153,6 +154,7 @@ const MAX_INDEX = OFFERS.length - VISIBLE; // 3
 function FlightCard({ offer }: { offer: Offer }) {
   return (
     <div
+      className={styles.card}
       style={{
         background:   '#FFFFFF',
         borderRadius: 24,
@@ -166,7 +168,7 @@ function FlightCard({ offer }: { offer: Offer }) {
       }}
     >
       {/* ── Image ────────────────────────────────────────────────────────── */}
-      <div style={{ width: 120, flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
+      <div className={styles.cardImage} style={{ width: 120, flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
         <img
           src={offer.image}
           alt={offer.destination}
@@ -345,25 +347,40 @@ function FlightCard({ offer }: { offer: Offer }) {
 // ─── Section ─────────────────────────────────────────────────────────────────
 
 export function FlightOffersSection() {
-  const [active, setActive] = useState(0);
+  const [active, setActive]   = useState(0);
+  const [cardW, setCardW]     = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const outerRef              = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const calc = () => {
+      if (!outerRef.current) return;
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      const totalW = outerRef.current.offsetWidth;
+      if (mobile) {
+        setCardW(totalW);
+      } else {
+        setCardW((totalW - GAP * (VISIBLE - 1)) / VISIBLE);
+      }
+    };
+    calc();
+    window.addEventListener('resize', calc);
+    return () => window.removeEventListener('resize', calc);
+  }, []);
+
+  // On mobile show 1 card at a time → 6 positions; desktop → 4 positions
+  const maxIndex = isMobile ? OFFERS.length - 1 : MAX_INDEX;
+  const effectiveCardW = cardW > 0 ? cardW : (1240 - GAP * (VISIBLE - 1)) / VISIBLE;
+  const translateX = active * (effectiveCardW + GAP);
 
   const prev = () => setActive((i) => Math.max(0, i - 1));
-  const next = () => setActive((i) => Math.min(MAX_INDEX, i + 1));
-
-  // Each card occupies 1/3 of the 1240px container minus 2 gaps
-  // cardWidth = (1240 - GAP*(VISIBLE-1)) / VISIBLE
-  const CARD_W = (1240 - GAP * (VISIBLE - 1)) / VISIBLE; // ≈ 402.67px
+  const next = () => setActive((i) => Math.min(maxIndex, i + 1));
 
   return (
     <section style={{ padding: '64px 0', background: '#F4F6F8' }}>
       {/* ── Content wrapper ─────────────────────────────────────────────── */}
-      <div
-        style={{
-          maxWidth: 1240,
-          width:    'calc(100% - 126px)',
-          margin:   '0 auto',
-        }}
-      >
+      <div className={styles.innerWrap}>
         {/* Header row */}
         <div
           style={{
@@ -412,7 +429,7 @@ export function FlightOffersSection() {
             </button>
             <button
               onClick={next}
-              disabled={active === MAX_INDEX}
+              disabled={active === maxIndex}
               style={{
                 width:          40,
                 height:         40,
@@ -422,8 +439,8 @@ export function FlightOffersSection() {
                 display:        'flex',
                 alignItems:     'center',
                 justifyContent: 'center',
-                cursor:         active === MAX_INDEX ? 'not-allowed' : 'pointer',
-                opacity:        active === MAX_INDEX ? 0.4 : 1,
+                cursor:         active === maxIndex ? 'not-allowed' : 'pointer',
+                opacity:        active === maxIndex ? 0.4 : 1,
                 transition:     'opacity 0.2s',
                 flexShrink:     0,
               }}
@@ -435,17 +452,17 @@ export function FlightOffersSection() {
         </div>
 
         {/* Carousel track */}
-        <div style={{ overflow: 'hidden' }}>
+        <div ref={outerRef} style={{ overflow: 'hidden' }}>
           <div
             style={{
               display:    'flex',
               gap:        `${GAP}px`,
               transition: 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
-              transform:  `translateX(calc(-${active} * (${CARD_W}px + ${GAP}px)))`,
+              transform:  `translateX(-${translateX}px)`,
             }}
           >
             {OFFERS.map((offer) => (
-              <div key={offer.id} style={{ width: CARD_W, flexShrink: 0 }}>
+              <div key={offer.id} style={{ width: effectiveCardW, flexShrink: 0 }}>
                 <FlightCard offer={offer} />
               </div>
             ))}
@@ -462,7 +479,7 @@ export function FlightOffersSection() {
             marginTop:      24,
           }}
         >
-          {Array.from({ length: MAX_INDEX + 1 }).map((_, i) => (
+          {Array.from({ length: maxIndex + 1 }).map((_, i) => (
             <button
               key={i}
               onClick={() => setActive(i)}

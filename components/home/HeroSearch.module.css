@@ -1,0 +1,86 @@
+/* ─── Responsive show/hide ─────────────────────────────────────────────── */
+.desktopSection {
+  display: block;
+}
+.mobileSection {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .desktopSection {
+    display: none !important;
+  }
+  .mobileSection {
+    display: block;
+  }
+}
+
+/* ─── Mobile nav bar (horizontal scroll, hide scrollbar) ──────────────── */
+.mobileNavBar {
+  display: flex;
+  gap: 8px;
+  padding: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  flex-shrink: 0;
+}
+.mobileNavBar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─── Mobile flight-type tabs ─────────────────────────────────────────── */
+.flightTypeTabs {
+  display: flex;
+  position: relative;
+  /* NO margin-bottom: parent gap handles spacing */
+}
+
+.flightTypeTabsUnderline {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: #CACACA;
+  border-radius: 4px;
+  z-index: 0;
+}
+
+.flightTypeTab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 8px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  line-height: 16px;
+  position: relative;   /* creates stacking context above the grey bar */
+  z-index: 1;
+}
+
+.flightTypeTabActive {
+  font-weight: 600;
+  color: #272626;
+}
+
+.flightTypeTabInactive {
+  font-weight: 500;
+  color: #504F4F;
+}
+
+.flightTypeTabBar {
+  height: 4px;
+  width: 100%;
+  border-radius: 4px;
+  background: linear-gradient(161.67deg, #DF0032 15.19%, #FF2C4E 85.32%);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;  /* renders above the grey underline */
+}

@@ -1,0 +1,15 @@
+/* Shared layout wrapper for vuelos landing pages */
+.pageMain {
+  max-width: 1240px;
+  width: calc(100% - 126px);
+  margin: 0 auto;
+  padding: 48px 0 80px;
+}
+
+@media (max-width: 768px) {
+  .pageMain {
+    width: 100%;
+    padding: 24px 16px 60px;
+    box-sizing: border-box;
+  }
+}
