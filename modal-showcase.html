@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modal Medios de Pago — Exploración UX/UI</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Nunito:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ─────────────────────────────── */
+:root {
+  --c-950:#272626; --c-700:#5E5E5E; --c-600:#797878; --c-500:#8D8D8D;
+  --c-400:#A1A1A1; --c-200:#E8E8E8; --c-100:#DFDFDF; --c-50:#F5F5F5;
+  --c-white:#FFFFFF; --c-bg:#F4F6F8;
+  --c-ok:#23A423; --c-ok-bg:#F0FBF0; --c-ok-dark:#1A6B1A;
+  --c-red:#FF5C7F; --c-red-bg:#FFF0F3;
+  --c-blue:#226FCB; --c-blue-dark:#0D4E88; --c-blue-900:#00325D;
+  --c-blue-950:#051B30; --c-blue-bg:#EAF1FB;
+  --c-amber:#D97706; --c-amber-bg:#FEF3C7;
+  --f-body:'Outfit',sans-serif; --f-alt:'Nunito',sans-serif;
+  --r-card:16px; --r-pill:32px; --r-tag:4px; --r-sm:8px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+img{display:block}
+button{cursor:pointer;border:none;background:none;font-family:inherit}
+
+/* ── PAGE ────────────────────────────────── */
+body{font-family:var(--f-body);background:#0d0d1a;min-height:100vh}
+.page-top{padding:24px 44px 18px;border-bottom:1px solid rgba(255,255,255,0.08)}
+.page-top h1{font-size:19px;font-weight:600;color:#fff;margin-bottom:4px}
+.page-top p{font-size:12.5px;color:rgba(255,255,255,0.38)}
+
+/* ── NAV ─────────────────────────────────── */
+nav.tabs{display:flex;gap:3px;padding:10px 44px;border-bottom:1px solid rgba(255,255,255,0.06);overflow-x:auto;scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs button{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:500;color:rgba(255,255,255,0.38);white-space:nowrap;transition:all .15s;font-family:var(--f-body)}
+nav.tabs button:hover{color:rgba(255,255,255,.7);background:rgba(255,255,255,.05)}
+nav.tabs button.active{color:#fff;background:rgba(255,255,255,.13)}
+
+/* ── SECTIONS ────────────────────────────── */
+.section{display:none;padding:32px 44px 72px}
+.section.active{display:block}
+.section-intro{margin-bottom:28px;max-width:760px}
+.section-intro h2{font-size:16px;font-weight:600;color:#fff;margin-bottom:6px}
+.section-intro p{font-size:12.5px;color:rgba(255,255,255,.42);line-height:1.7}
+.section-intro .chip{display:inline-block;padding:2px 9px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:rgba(34,111,203,.2);color:#7eb5f5;margin-bottom:8px}
+.section-intro ul{margin:6px 0 0 18px;list-style:disc}
+.section-intro ul li{font-size:12px;color:rgba(255,255,255,.35);line-height:1.7}
+
+/* ── SHOWCASE GRID ───────────────────────── */
+.showcase{display:grid;grid-template-columns:1fr 396px;gap:32px;align-items:start}
+.showcase-col h3{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.22);margin-bottom:12px}
+.desktop-area{background:var(--c-bg);border-radius:12px;min-height:500px;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px}
+.phone-frame{width:396px;min-height:720px;background:#e4e6ea;border-radius:44px;border:10px solid #1a1a2a;overflow:hidden;position:relative;display:flex;flex-direction:column;justify-content:flex-end;box-shadow:0 0 0 1px #333}
+.phone-screen{background:var(--c-bg);flex:1;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden}
+
+/* ── MODAL SHELL ─────────────────────────── */
+.modal{background:var(--c-white);border-radius:var(--r-card);width:100%;max-width:648px;box-shadow:0 20px 60px rgba(0,0,0,.13);display:flex;flex-direction:column;overflow:hidden}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;flex-shrink:0}
+.modal-head-title{font-size:18px;font-weight:600;color:var(--c-950);line-height:1.2}
+.modal-head-title.sm{font-size:15px}
+.btn-x{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:50%;color:var(--c-500);font-size:17px;transition:background .15s;line-height:1}
+.btn-x:hover{background:var(--c-bg)}
+.modal-top-divider{height:1px;background:var(--c-100);flex-shrink:0;margin:0 24px}
+.modal-scroll{overflow-y:auto;padding:0 24px 24px;scrollbar-width:thin;scrollbar-color:var(--c-400) var(--c-100)}
+.modal-scroll::-webkit-scrollbar{width:4px}
+.modal-scroll::-webkit-scrollbar-track{background:var(--c-100);border-radius:10px}
+.modal-scroll::-webkit-scrollbar-thumb{background:var(--c-400);border-radius:10px}
+.modal-body{display:flex;flex-direction:column;gap:20px;padding-top:20px}
+
+/* Mobile modal */
+.modal-mobile{background:var(--c-white);border-radius:16px 16px 0 0;display:flex;flex-direction:column;overflow:hidden}
+.modal-mobile .modal-scroll{max-height:520px}
+
+/* ── SHARED MODAL COMPONENTS ─────────────── */
+.sec-head{display:flex;flex-direction:column;gap:2px}
+.sec-head-row{display:flex;align-items:center;gap:8px}
+.sec-head-title{font-size:15px;font-weight:500;color:var(--c-950);line-height:24px}
+.sec-head-sub{font-family:var(--f-alt);font-size:11.5px;font-weight:500;color:var(--c-500);line-height:20px}
+.icon24{width:24px;height:24px;flex-shrink:0}
+.divider{height:1px;background:var(--c-100)}
+.divider-thin{height:1px;background:#f0f0f0}
+
+/* Tarjeta block */
+.t-block{display:flex;flex-direction:column;gap:12px}
+.t-label{font-size:14px;font-weight:400;color:var(--c-950);line-height:18px}
+.t-label b{font-weight:600}
+.inst-list{display:flex;flex-direction:column;gap:12px}
+.inst-row{display:flex;flex-direction:column;gap:4px}
+.inst-lbl{font-size:13.5px;font-weight:500;line-height:16px}
+.inst-lbl.n{color:var(--c-950)}
+.inst-lbl.g{color:var(--c-ok)}
+.inst-lbl.r{color:var(--c-red)}
+.banks{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.bk{height:22px;width:auto;max-width:80px;object-fit:contain;object-position:left center}
+.bk-text{display:inline-flex;align-items:center;height:22px;padding:0 7px;border-radius:3px;font-size:9.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.bk-text.sv{background:#fdf0f0;color:#b00;border:1px solid #f5cccc}
+.bk-text.cf{background:#e8f4e8;color:#1a6b1a;border:1px solid #b8deb8}
+.bk-text.cf-black{background:#1a2740;color:#90bef5;border:1px solid #2e4a70}
+.all-bk{display:flex;align-items:center;gap:8px}
+.all-bk-lbl{font-size:13.5px;font-weight:400;color:var(--c-950);line-height:20px}
+.transfer-note{font-size:11.5px;font-weight:400;color:var(--c-600);line-height:20px}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:1px 7px;border-radius:var(--r-pill);font-size:9.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.badge.general{background:var(--c-ok-bg);color:var(--c-ok-dark);border:1px solid rgba(35,164,35,.2)}
+.badge.exclusivo{background:var(--c-blue-bg);color:var(--c-blue-dark);border:1px solid rgba(34,111,203,.2)}
+.badge.bin{background:var(--c-amber-bg);color:var(--c-amber);border:1px solid rgba(217,119,6,.25)}
+.badge.negro{background:var(--c-blue-950);color:#a8ccf5;border:1px solid rgba(255,255,255,.12)}
+
+/* ══════════════════════════════════════════
+   VARIANTE 1 — INCREMENTAL
+══════════════════════════════════════════ */
+.v1-tarjeta-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.v1-card-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 10px 3px 5px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.v1-card-chip.visa{background:#e8eeff;color:#1434CB}
+.v1-card-chip.mc{background:#fff0f0;color:#b52121}
+.v1-card-icon{width:22px;height:14px;border-radius:2px}
+.v1-card-icon.visa{background:linear-gradient(135deg,#226FCB 60%,#0D4E88 60%)}
+.v1-card-icon.mc{position:relative;display:flex;align-items:center;width:20px;height:14px}
+.v1-card-icon.mc::before{content:'';position:absolute;left:0;width:13px;height:13px;border-radius:50%;background:#EB001B;opacity:.9}
+.v1-card-icon.mc::after{content:'';position:absolute;left:7px;width:13px;height:13px;border-radius:50%;background:#F79E1B;opacity:.9}
+.v1-comafi-excl{margin-left:10px;padding:8px 12px;background:var(--c-blue-bg);border-left:3px solid var(--c-blue);border-radius:0 8px 8px 0;display:flex;flex-direction:column;gap:5px}
+.v1-excl-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.v1-excl-note{font-size:11px;color:var(--c-blue);line-height:1.4}
+
+/* ══════════════════════════════════════════
+   VARIANTE 2 — POR BENEFICIO / CONDICIÓN
+══════════════════════════════════════════ */
+.v2-group{border:1px solid var(--c-100);border-radius:10px;overflow:hidden;margin-bottom:0}
+.v2-group-head{display:flex;align-items:center;gap:8px;padding:9px 14px}
+.v2-group-head.green{background:#f0fbf0}
+.v2-group-head.neutral{background:var(--c-50)}
+.v2-group-head.exclusive{background:var(--c-blue-bg)}
+.v2-group-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em}
+.v2-group-title.green{color:var(--c-ok-dark)}
+.v2-group-title.neutral{color:var(--c-700)}
+.v2-group-title.exclusive{color:var(--c-blue-dark)}
+.v2-brow{display:flex;align-items:flex-start;gap:12px;padding:9px 14px;border-top:1px solid var(--c-100)}
+.v2-cuotas{min-width:110px;flex-shrink:0}
+.v2-cuotas-num{font-size:14px;font-weight:600;color:var(--c-950);line-height:1.2}
+.v2-cuotas-tipo{font-size:10.5px;font-weight:500;margin-top:1px}
+.v2-cuotas-tipo.g{color:var(--c-ok)}
+.v2-cuotas-tipo.r{color:var(--c-red)}
+.v2-cuotas-tipo.n{color:var(--c-500)}
+.v2-banks{display:flex;flex-wrap:wrap;align-items:center;gap:8px;flex:1}
+.v2-card-badges{display:flex;gap:3px;align-items:center;flex-shrink:0}
+.cb{display:inline-flex;align-items:center;padding:1px 6px;border-radius:3px;font-size:8.5px;font-weight:800;letter-spacing:.06em}
+.cb.visa{background:#1434CB;color:#fff}
+.cb.mc{background:#EB001B;color:#fff}
+.v2-excl{padding:9px 14px;border-top:1px solid rgba(34,111,203,.15);background:#f5f9ff;display:flex;flex-direction:column;gap:5px}
+.v2-excl-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.v2-excl-title{font-size:13.5px;font-weight:600;color:var(--c-blue-950)}
+.v2-excl-note{font-size:11px;color:var(--c-blue);line-height:1.4}
+
+/* ══════════════════════════════════════════
+   VARIANTE 3 — MODULAR / CARDS
+══════════════════════════════════════════ */
+.v3-card{border:1px solid var(--c-100);border-radius:10px;overflow:hidden}
+.v3-card+.v3-card{margin-top:8px}
+.v3-card-head{padding:9px 14px;border-bottom:1px solid var(--c-100)}
+.v3-card-head.gen{background:var(--c-50)}
+.v3-card-head.green{background:#f0fbf0}
+.v3-card-head.red{background:#fff5f7}
+.v3-card-head.dark{background:var(--c-blue-950);border-bottom:1px solid rgba(255,255,255,.08)}
+.v3-card-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.v3-card-title.gen{color:var(--c-600)}
+.v3-card-title.green{color:var(--c-ok-dark)}
+.v3-card-title.red{color:#b03050}
+.v3-card-title.dark{color:#a8ccf5}
+.v3-row{display:flex;align-items:center;gap:12px;padding:9px 14px}
+.v3-row+.v3-row{border-top:1px solid var(--c-100)}
+.v3-row.dark{background:var(--c-blue-950)}
+.v3-row.dark+.v3-row.dark{border-top:1px solid rgba(255,255,255,.07)}
+.v3-num{min-width:72px;flex-shrink:0}
+.v3-n{font-size:20px;font-weight:700;line-height:1}
+.v3-n.g{color:var(--c-ok)}
+.v3-n.r{color:var(--c-red)}
+.v3-n.w{color:#fff}
+.v3-t{font-size:9.5px;font-weight:500;text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+.v3-t.g{color:var(--c-ok)}
+.v3-t.r{color:var(--c-red)}
+.v3-t.n{color:var(--c-500)}
+.v3-t.w{color:rgba(255,255,255,.4)}
+.v3-bks{display:flex;flex-wrap:wrap;align-items:center;gap:8px;flex:1}
+.v3-comafi-card{border:1.5px solid var(--c-blue);border-radius:10px;overflow:hidden}
+.v3-comafi-card+.v3-card,.v3-card+.v3-comafi-card{margin-top:8px}
+.v3-comafi-head{background:var(--c-blue-950);padding:9px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.08)}
+.v3-comafi-head-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#a8ccf5}
+.v3-comafi-head-badge{padding:2px 9px;border-radius:20px;font-size:9px;font-weight:700;background:rgba(144,190,245,.18);color:#90bef5;letter-spacing:.04em}
+
+/* ══════════════════════════════════════════
+   VARIANTE 4 — SINTÉTICA
+══════════════════════════════════════════ */
+.inner-tabs{display:flex;background:var(--c-50);border-radius:8px;padding:3px;gap:2px}
+.i-tab{flex:1;padding:6px 10px;border-radius:6px;text-align:center;font-size:12px;font-weight:600;color:var(--c-500);cursor:pointer;transition:all .15s;user-select:none}
+.i-tab.active{background:var(--c-white);color:var(--c-950);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.v4-list{border:1px solid var(--c-100);border-radius:10px;overflow:hidden}
+.v4-row{display:flex;align-items:center;padding:9px 14px;gap:12px}
+.v4-row+.v4-row{border-top:1px solid var(--c-100)}
+.v4-row.alt{background:#fafafa}
+.v4-row.excl{background:#F5F9FF}
+.v4-row.dark{background:var(--c-blue-950)}
+.v4-row.dark+.v4-row.dark{border-top:1px solid rgba(255,255,255,.07)}
+.v4-c{min-width:84px;flex-shrink:0}
+.v4-n{font-size:18px;font-weight:700;line-height:1}
+.v4-n.g{color:var(--c-ok)}
+.v4-n.r{color:var(--c-red)}
+.v4-n.neutral{color:var(--c-950)}
+.v4-n.white{color:#fff}
+.v4-t{font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+.v4-t.g{color:var(--c-ok)}
+.v4-t.r{color:var(--c-red)}
+.v4-t.n{color:var(--c-500)}
+.v4-t.w{color:rgba(255,255,255,.4)}
+.v4-bks{display:flex;flex-wrap:wrap;align-items:center;gap:8px;flex:1}
+.v4-end{display:flex;gap:4px;flex-shrink:0}
+.v4-panel{display:none}
+.v4-panel.active{display:flex;flex-direction:column;gap:12px}
+.v4-note{display:flex;align-items:flex-start;gap:7px;padding:8px 12px;background:var(--c-amber-bg);border-radius:8px;border:1px solid rgba(217,119,6,.2);margin-top:4px}
+.v4-note-ico{font-size:14px;flex-shrink:0}
+.v4-note-txt{font-size:11px;color:#92400E;line-height:1.5}
+.v4-note-txt b{font-weight:700}
+</style>
+</head>
+<body>
+
+<div class="page-top">
+  <h1>Modal "Medios de Pago y Cuotas" — Exploración UX/UI</h1>
+  <p>Réplica Figma · V1 Incremental · V2 Por Beneficio · V3 Modular · V4 Sintética &nbsp;·&nbsp; Desktop + Mobile</p>
+</div>
+
+<nav class="tabs">
+  <button class="active" onclick="showTab('base')">Base — Réplica Figma</button>
+  <button onclick="showTab('v1')">V1 · Mejora Incremental</button>
+  <button onclick="showTab('v2')">V2 · Por Beneficio / Condición</button>
+  <button onclick="showTab('v3')">V3 · Modular / Cards</button>
+  <button onclick="showTab('v4')">V4 · Sintética / Escaneable</button>
+</nav>
+
+<!-- ═══════════════════════════════════════
+     BASE — RÉPLICA FIGMA
+════════════════════════════════════════ -->
+<div id="tab-base" class="section active">
+  <div class="section-intro">
+    <span class="chip">Réplica Base</span>
+    <h2>Fiel al diseño original de Figma</h2>
+    <p>Reproduce estructura, jerarquía, textos y disposición exactos. No incluye el caso Comafi (no aparece en los frames originales). La versión mobile refleja el bottom sheet tal como fue diseñado.</p>
+  </div>
+  <div class="showcase">
+    <div class="showcase-col">
+      <h3>Desktop — 693px modal</h3>
+      <div class="desktop-area">
+        <div class="modal">
+          <div class="modal-head">
+            <span class="modal-head-title">Medios de pago y cuotas</span>
+            <button class="btn-x">✕</button>
+          </div>
+          <div class="modal-top-divider"></div>
+          <div class="modal-scroll" style="max-height:560px">
+            <div class="modal-body">
+              <!-- Tarjetas de crédito header -->
+              <div class="sec-head">
+                <div class="sec-head-row">
+                  <img class="icon24" src="https://www.figma.com/api/mcp/asset/e8fb427b-be12-4ece-9504-358b0cf27749" alt="">
+                  <span class="sec-head-title">Tarjetas de crédito</span>
+                </div>
+                <span class="sec-head-sub">Acreditación instantánea</span>
+              </div>
+              <!-- VISA -->
+              <div class="t-block">
+                <div class="t-label">Cuotas con tarjeta <b>VISA</b> con los siguientes bancos</div>
+                <div class="inst-list">
+                  <div class="inst-row">
+                    <span class="inst-lbl n">1 cuota</span>
+                    <div class="all-bk"><img class="icon24" src="https://www.figma.com/api/mcp/asset/5db0c0a0-1f55-434e-85df-07632cb41342" alt=""><span class="all-bk-lbl">Disponible con todos los bancos</span></div>
+                  </div>
+                  <div class="divider-thin"></div>
+                  <div class="inst-row">
+                    <span class="inst-lbl g">3 cuotas sin interés</span>
+                    <div class="banks">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/e35db589-4fd9-41ca-84f4-767be2a0bf32" alt="Banco Ciudad">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/d2dd2d73-7ee9-4861-825c-9b7dc16334ba" alt="Galicia">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/13b67f26-5786-4719-b9c5-caca3f3c6a11" alt="Macro">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/396dbbfe-de7b-4d48-8bfc-f31222955cb6" alt="Santander">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/a7f01aee-a16b-4d46-a216-b67a9b3f288a" alt="BBVA">
+                    </div>
+                  </div>
+                  <div class="divider-thin"></div>
+                  <div class="inst-row">
+                    <span class="inst-lbl r">3 cuotas con interés</span>
+                    <div class="banks">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/95ed5d36-7871-4750-a7e7-748e4b6311d3" alt="Credicoop">
+                      <img class="bk" style="max-width:26px" src="https://www.figma.com/api/mcp/asset/ebb4ab15-adcb-4500-a51a-2cf8fb5f4ead" alt="Itaú">
+                      <span class="bk-text sv">Supervielle</span>
+                    </div>
+                  </div>
+                  <div class="divider-thin"></div>
+                  <div class="inst-row">
+                    <span class="inst-lbl r">6 cuotas con interés</span>
+                    <div class="banks">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/13b67f26-5786-4719-b9c5-caca3f3c6a11" alt="Macro">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/396dbbfe-de7b-4d48-8bfc-f31222955cb6" alt="Santander">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/a7f01aee-a16b-4d46-a216-b67a9b3f288a" alt="BBVA">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="divider"></div>
+              <!-- MASTERCARD -->
+              <div class="t-block">
+                <div class="t-label">Cuotas con tarjeta <b>Mastercard</b> con los siguientes bancos</div>
+                <div class="inst-list">
+                  <div class="inst-row">
+                    <span class="inst-lbl n">1 cuota</span>
+                    <div class="all-bk"><img class="icon24" src="https://www.figma.com/api/mcp/asset/5db0c0a0-1f55-434e-85df-07632cb41342" alt=""><span class="all-bk-lbl">Disponible con todos los bancos</span></div>
+                  </div>
+                  <div class="divider-thin"></div>
+                  <div class="inst-row">
+                    <span class="inst-lbl r">3 cuotas con interés</span>
+                    <div class="banks">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/95ed5d36-7871-4750-a7e7-748e4b6311d3" alt="Credicoop">
+                      <img class="bk" style="max-width:26px" src="https://www.figma.com/api/mcp/asset/ebb4ab15-adcb-4500-a51a-2cf8fb5f4ead" alt="Itaú">
+                      <span class="bk-text sv">Supervielle</span>
+                    </div>
+                  </div>
+                  <div class="divider-thin"></div>
+                  <div class="inst-row">
+                    <span class="inst-lbl r">6 cuotas con interés</span>
+                    <div class="banks">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/13b67f26-5786-4719-b9c5-caca3f3c6a11" alt="Macro">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/396dbbfe-de7b-4d48-8bfc-f31222955cb6" alt="Santander">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="divider"></div>
+              <!-- Transferencia -->
+              <div class="sec-head">
+                <div class="sec-head-row">
+                  <img class="icon24" src="https://www.figma.com/api/mcp/asset/6cc0ba03-3f21-4490-9547-7997182d0fcf" alt="">
+                  <span class="sec-head-title">Transferencia o Depósito</span>
+                </div>
+                <span class="transfer-note">La reserva estará vigente durante 2 horas hasta que realice su pago.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="showcase-col">
+      <h3>Mobile — Bottom sheet</h3>
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="modal-mobile">
+            <div class="modal-head">
+              <span class="modal-head-title sm">Medios de pago y cuotas</span>
+              <button class="btn-x">✕</button>
+            </div>
+            <div class="modal-top-divider"></div>
+            <div class="modal-scroll">
+              <div class="modal-body">
+                <div class="sec-head">
+                  <div class="sec-head-row">
+                    <img class="icon24" src="https://www.figma.com/api/mcp/asset/e8fb427b-be12-4ece-9504-358b0cf27749" alt="">
+                    <span class="sec-head-title">Tarjetas de crédito</span>
+                  </div>
+                  <span class="sec-head-sub">Acreditación instantánea</span>
+                </div>
+                <div class="t-block">
+                  <div class="t-label">Cuotas con tarjeta <b>VISA</b> con los siguientes bancos</div>
+                  <div class="inst-list">
+                    <div class="inst-row">
+                      <span class="inst-lbl n">1 cuota</span>
+                      <div class="all-bk"><img class="icon24" src="https://www.figma.com/api/mcp/asset/5db0c0a0-1f55-434e-85df-07632cb41342" alt=""><span class="all-bk-lbl">Disponible con todos los bancos</span></div>
+                    </div>
+                    <div class="divider-thin"></div>
+                    <div class="inst-row">
+                      <span class="inst-lbl g">3 cuotas sin interés</span>
+                      <div class="banks">
+                        <img class="bk" src="https://www.figma.com/api/mcp/asset/e35db589-4fd9-41ca-84f4-767be2a0bf32" alt="Banco Ciudad">
+                        <img class="bk" src="https://www.figma.com/api/mcp/asset/d2dd2d73-7ee9-4861-825c-9b7dc16334ba" alt="Galicia">
+                        <img class="bk" src="https://www.figma.com/api/mcp/asset/13b67f26-5786-4719-b9c5-caca3f3c6a11" alt="Macro">
+                        <img class="bk" src="https://www.figma.com/api/mcp/asset/396dbbfe-de7b-4d48-8bfc-f31222955cb6" alt="Santander">
+                        <img class="bk" src="https://www.figma.com/api/mcp/asset/a7f01aee-a16b-4d46-a216-b67a9b3f288a" alt="BBVA">
+                      </div>
+                    </div>
+                    <div class="divider-thin"></div>
+                    <div class="inst-row">
+                      <span class="inst-lbl r">6 cuotas con interés</span>
+                      <div class="banks">
+                        <img class="bk" src="https://www.figma.com/api/mcp/asset/13b67f26-5786-4719-b9c5-caca3f3c6a11" alt="Macro">
+                        <img class="bk" src="https://www.figma.com/api/mcp/asset/396dbbfe-de7b-4d48-8bfc-f31222955cb6" alt="Santander">
+                        <img class="bk" src="https://www.figma.com/api/mcp/asset/a7f01aee-a16b-4d46-a216-b67a9b3f288a" alt="BBVA">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="divider"></div>
+                <div class="t-block">
+                  <div class="t-label">Cuotas con tarjeta <b>Mastercard</b> con los siguientes bancos</div>
+                  <div class="inst-list">
+                    <div class="inst-row">
+                      <span class="inst-lbl r">3 cuotas con interés</span>
+                      <div class="banks">
+                        <img class="bk" src="https://www.figma.com/api/mcp/asset/95ed5d36-7871-4750-a7e7-748e4b6311d3" alt="Credicoop">
+                        <img class="bk" style="max-width:26px" src="https://www.figma.com/api/mcp/asset/ebb4ab15-adcb-4500-a51a-2cf8fb5f4ead" alt="Itaú">
+                        <span class="bk-text sv">Supervielle</span>
+                      </div>
+                    </div>
+                    <div class="divider-thin"></div>
+                    <div class="inst-row">
+                      <span class="inst-lbl r">6 cuotas con interés</span>
+                      <div class="banks">
+                        <img class="bk" src="https://www.figma.com/api/mcp/asset/13b67f26-5786-4719-b9c5-caca3f3c6a11" alt="Macro">
+                        <img class="bk" src="https://www.figma.com/api/mcp/asset/396dbbfe-de7b-4d48-8bfc-f31222955cb6" alt="Santander">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="divider"></div>
+                <div class="sec-head">
+                  <div class="sec-head-row">
+                    <img class="icon24" src="https://www.figma.com/api/mcp/asset/6cc0ba03-3f21-4490-9547-7997182d0fcf" alt="">
+                    <span class="sec-head-title">Transferencia o Depósito</span>
+                  </div>
+                  <span class="transfer-note">La reserva estará vigente durante 2 horas hasta que realice su pago.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     VARIANTE 1 — MEJORA INCREMENTAL
+════════════════════════════════════════ -->
+<div id="tab-v1" class="section">
+  <div class="section-intro">
+    <span class="chip">Variante 1 — Incremental</span>
+    <h2>Mejora tipográfica, espaciado y claridad Comafi</h2>
+    <p>Mantiene la lógica actual pero mejora jerarquía visual, separación de bloques por tarjeta, y presenta el caso Comafi con distinción clara entre cartera general (6 CSI) y segmento exclusivo (9 CSI). El caso BIN se comunica con un bloque indentado diferenciado.</p>
+    <ul>
+      <li>Chips de tarjeta (VISA / Mastercard) como separadores de sección</li>
+      <li>Labels "sin interés" destacados con mayor peso</li>
+      <li>Comafi: fila general + sub-bloque azul con badge BIN exclusivo</li>
+    </ul>
+  </div>
+  <div class="showcase">
+    <div class="showcase-col">
+      <h3>Desktop</h3>
+      <div class="desktop-area">
+        <div class="modal">
+          <div class="modal-head">
+            <span class="modal-head-title">Medios de pago y cuotas</span>
+            <button class="btn-x">✕</button>
+          </div>
+          <div class="modal-top-divider"></div>
+          <div class="modal-scroll" style="max-height:580px">
+            <div class="modal-body">
+              <div class="sec-head">
+                <div class="sec-head-row">
+                  <img class="icon24" src="https://www.figma.com/api/mcp/asset/e8fb427b-be12-4ece-9504-358b0cf27749" alt="">
+                  <span class="sec-head-title" style="font-weight:600">Tarjetas de crédito</span>
+                </div>
+                <span class="sec-head-sub">Acreditación instantánea</span>
+              </div>
+              <!-- VISA V1 -->
+              <div class="t-block">
+                <div class="v1-tarjeta-header">
+                  <div class="v1-card-chip visa"><div class="v1-card-icon visa"></div>VISA</div>
+                  <span style="font-size:13px;color:var(--c-600)">con los siguientes bancos</span>
+                </div>
+                <div class="inst-list">
+                  <div class="inst-row">
+                    <span class="inst-lbl n">1 cuota</span>
+                    <div class="all-bk"><img class="icon24" src="https://www.figma.com/api/mcp/asset/5db0c0a0-1f55-434e-85df-07632cb41342" alt=""><span class="all-bk-lbl">Disponible con todos los bancos</span></div>
+                  </div>
+                  <div class="divider-thin"></div>
+                  <div class="inst-row">
+                    <span class="inst-lbl g" style="font-size:14px;font-weight:600">3 cuotas sin interés</span>
+                    <div class="banks">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/e35db589-4fd9-41ca-84f4-767be2a0bf32" alt="Banco Ciudad">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/d2dd2d73-7ee9-4861-825c-9b7dc16334ba" alt="Galicia">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/13b67f26-5786-4719-b9c5-caca3f3c6a11" alt="Macro">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/396dbbfe-de7b-4d48-8bfc-f31222955cb6" alt="Santander">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/a7f01aee-a16b-4d46-a216-b67a9b3f288a" alt="BBVA">
+                    </div>
+                  </div>
+                  <div class="divider-thin"></div>
+                  <!-- COMAFI V1 -->
+                  <div class="inst-row">
+                    <span class="inst-lbl g" style="font-size:14px;font-weight:600">6 cuotas sin interés</span>
+                    <div class="banks" style="margin-bottom:6px">
+                      <span class="bk-text cf">Comafi</span>
+                      <span class="badge general">Cartera general</span>
+                    </div>
+                    <div class="v1-comafi-excl">
+                      <div class="v1-excl-row">
+                        <span class="inst-lbl g" style="font-size:13px">9 cuotas sin interés</span>
+                        <span class="bk-text cf-black">Comafi Único Black</span>
+                        <span class="badge bin">BIN exclusivo</span>
+                      </div>
+                      <span class="v1-excl-note">Solo para BINES habilitados de Comafi Único Black.</span>
+                    </div>
+                  </div>
+                  <div class="divider-thin"></div>
+                  <div class="inst-row">
+                    <span class="inst-lbl r">3 cuotas con interés</span>
+                    <div class="banks">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/95ed5d36-7871-4750-a7e7-748e4b6311d3" alt="Credicoop">
+                      <img class="bk" style="max-width:26px" src="https://www.figma.com/api/mcp/asset/ebb4ab15-adcb-4500-a51a-2cf8fb5f4ead" alt="Itaú">
+                      <span class="bk-text sv">Supervielle</span>
+                    </div>
+                  </div>
+                  <div class="divider-thin"></div>
+                  <div class="inst-row">
+                    <span class="inst-lbl r">6 cuotas con interés</span>
+                    <div class="banks">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/13b67f26-5786-4719-b9c5-caca3f3c6a11" alt="Macro">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/396dbbfe-de7b-4d48-8bfc-f31222955cb6" alt="Santander">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/a7f01aee-a16b-4d46-a216-b67a9b3f288a" alt="BBVA">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="divider"></div>
+              <!-- MASTERCARD V1 -->
+              <div class="t-block">
+                <div class="v1-tarjeta-header">
+                  <div class="v1-card-chip mc"><div class="v1-card-icon mc"></div>Mastercard</div>
+                  <span style="font-size:13px;color:var(--c-600)">con los siguientes bancos</span>
+                </div>
+                <div class="inst-list">
+                  <div class="inst-row">
+                    <span class="inst-lbl n">1 cuota</span>
+                    <div class="all-bk"><img class="icon24" src="https://www.figma.com/api/mcp/asset/5db0c0a0-1f55-434e-85df-07632cb41342" alt=""><span class="all-bk-lbl">Disponible con todos los bancos</span></div>
+                  </div>
+                  <div class="divider-thin"></div>
+                  <div class="inst-row">
+                    <span class="inst-lbl r">3 cuotas con interés</span>
+                    <div class="banks">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/95ed5d36-7871-4750-a7e7-748e4b6311d3" alt="Credicoop">
+                      <img class="bk" style="max-width:26px" src="https://www.figma.com/api/mcp/asset/ebb4ab15-adcb-4500-a51a-2cf8fb5f4ead" alt="Itaú">
+                      <span class="bk-text sv">Supervielle</span>
+                    </div>
+                  </div>
+                  <div class="divider-thin"></div>
+                  <div class="inst-row">
+                    <span class="inst-lbl r">6 cuotas con interés</span>
+                    <div class="banks">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/13b67f26-5786-4719-b9c5-caca3f3c6a11" alt="Macro">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/396dbbfe-de7b-4d48-8bfc-f31222955cb6" alt="Santander">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="divider"></div>
+              <div class="sec-head">
+                <div class="sec-head-row">
+                  <img class="icon24" src="https://www.figma.com/api/mcp/asset/6cc0ba03-3f21-4490-9547-7997182d0fcf" alt="">
+                  <span class="sec-head-title" style="font-weight:600">Transferencia o Depósito</span>
+                </div>
+                <span class="transfer-note">La reserva estará vigente durante 2 horas hasta que realice su pago.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="showcase-col">
+      <h3>Mobile</h3>
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="modal-mobile">
+            <div class="modal-head">
+              <span class="modal-head-title sm">Medios de pago y cuotas</span>
+              <button class="btn-x">✕</button>
+            </div>
+            <div class="modal-top-divider"></div>
+            <div class="modal-scroll">
+              <div class="modal-body">
+                <div class="sec-head">
+                  <div class="sec-head-row">
+                    <img class="icon24" src="https://www.figma.com/api/mcp/asset/e8fb427b-be12-4ece-9504-358b0cf27749" alt="">
+                    <span class="sec-head-title" style="font-weight:600">Tarjetas de crédito</span>
+                  </div>
+                  <span class="sec-head-sub">Acreditación instantánea</span>
+                </div>
+                <div class="t-block">
+                  <div class="v1-tarjeta-header">
+                    <div class="v1-card-chip visa"><div class="v1-card-icon visa"></div>VISA</div>
+                  </div>
+                  <div class="inst-list">
+                    <div class="inst-row">
+                      <span class="inst-lbl n">1 cuota</span>
+                      <div class="all-bk"><img class="icon24" src="https://www.figma.com/api/mcp/asset/5db0c0a0-1f55-434e-85df-07632cb41342" alt=""><span class="all-bk-lbl">Disponible con todos los bancos</span></div>
+                    </div>
+                    <div class="divider-thin"></div>
+                    <div class="inst-row">
+                      <span class="inst-lbl g" style="font-weight:600">3 cuotas sin interés</span>
+                      <div class="banks">
+                        <img class="bk" src="https://www.figma.com/api/mcp/asset/e35db589-4fd9-41ca-84f4-767be2a0bf32" alt="Banco Ciudad">
+                        <img class="bk" src="https://www.figma.com/api/mcp/asset/d2dd2d73-7ee9-4861-825c-9b7dc16334ba" alt="Galicia">
+                        <img class="bk" src="https://www.figma.com/api/mcp/asset/13b67f26-5786-4719-b9c5-caca3f3c6a11" alt="Macro">
+                        <img class="bk" src="https://www.figma.com/api/mcp/asset/396dbbfe-de7b-4d48-8bfc-f31222955cb6" alt="Santander">
+                        <img class="bk" src="https://www.figma.com/api/mcp/asset/a7f01aee-a16b-4d46-a216-b67a9b3f288a" alt="BBVA">
+                      </div>
+                    </div>
+                    <div class="divider-thin"></div>
+                    <div class="inst-row">
+                      <span class="inst-lbl g" style="font-weight:600">6 cuotas sin interés</span>
+                      <div class="banks" style="margin-bottom:5px">
+                        <span class="bk-text cf">Comafi</span>
+                        <span class="badge general">Cartera general</span>
+                      </div>
+                      <div class="v1-comafi-excl">
+                        <div class="v1-excl-row">
+                          <span class="inst-lbl g" style="font-size:12px">9 cuotas sin interés</span>
+                          <span class="bk-text cf-black">Único Black</span>
+                          <span class="badge bin">BIN exclusivo</span>
+                        </div>
+                        <span class="v1-excl-note">Solo BINES habilitados Comafi Único Black.</span>
+                      </div>
+                    </div>
+                    <div class="divider-thin"></div>
+                    <div class="inst-row">
+                      <span class="inst-lbl r">6 cuotas con interés</span>
+                      <div class="banks">
+                        <img class="bk" src="https://www.figma.com/api/mcp/asset/13b67f26-5786-4719-b9c5-caca3f3c6a11" alt="Macro">
+                        <img class="bk" src="https://www.figma.com/api/mcp/asset/396dbbfe-de7b-4d48-8bfc-f31222955cb6" alt="Santander">
+                        <img class="bk" src="https://www.figma.com/api/mcp/asset/a7f01aee-a16b-4d46-a216-b67a9b3f288a" alt="BBVA">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="divider"></div>
+                <div class="t-block">
+                  <div class="v1-tarjeta-header">
+                    <div class="v1-card-chip mc"><div class="v1-card-icon mc"></div>Mastercard</div>
+                  </div>
+                  <div class="inst-list">
+                    <div class="inst-row">
+                      <span class="inst-lbl r">3 cuotas con interés</span>
+                      <div class="banks">
+                        <img class="bk" src="https://www.figma.com/api/mcp/asset/95ed5d36-7871-4750-a7e7-748e4b6311d3" alt="Credicoop">
+                        <img class="bk" style="max-width:26px" src="https://www.figma.com/api/mcp/asset/ebb4ab15-adcb-4500-a51a-2cf8fb5f4ead" alt="Itaú">
+                        <span class="bk-text sv">Supervielle</span>
+                      </div>
+                    </div>
+                    <div class="divider-thin"></div>
+                    <div class="inst-row">
+                      <span class="inst-lbl r">6 cuotas con interés</span>
+                      <div class="banks">
+                        <img class="bk" src="https://www.figma.com/api/mcp/asset/13b67f26-5786-4719-b9c5-caca3f3c6a11" alt="Macro">
+                        <img class="bk" src="https://www.figma.com/api/mcp/asset/396dbbfe-de7b-4d48-8bfc-f31222955cb6" alt="Santander">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="divider"></div>
+                <div class="sec-head">
+                  <div class="sec-head-row">
+                    <img class="icon24" src="https://www.figma.com/api/mcp/asset/6cc0ba03-3f21-4490-9547-7997182d0fcf" alt="">
+                    <span class="sec-head-title" style="font-weight:600">Transferencia o Depósito</span>
+                  </div>
+                  <span class="transfer-note">La reserva estará vigente durante 2 horas hasta que realice su pago.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     VARIANTE 2 — POR BENEFICIO / CONDICIÓN
+════════════════════════════════════════ -->
+<div id="tab-v2" class="section">
+  <div class="section-intro">
+    <span class="chip">Variante 2 — Por Beneficio</span>
+    <h2>Agrupación por tipo de beneficio y condición</h2>
+    <p>Reorganiza el contenido en tres bloques: Sin interés, Con interés, y Exclusivo por segmento. Cada bloque tiene header color-coded. El caso Comafi se separa visualmente en un bloque "Exclusivo" con badge BIN bien visible. Los chips VISA/MC aparecen en cada fila para indicar aplicabilidad.</p>
+    <ul>
+      <li>Bloques agrupados por beneficio: sin interés / con interés / exclusivo</li>
+      <li>Comafi separado del resto — no puede confundirse con los bancos generales</li>
+      <li>Badge "BIN exclusivo" en zona exclusiva, no al pie del modal</li>
+    </ul>
+  </div>
+  <div class="showcase">
+    <div class="showcase-col">
+      <h3>Desktop</h3>
+      <div class="desktop-area">
+        <div class="modal">
+          <div class="modal-head">
+            <span class="modal-head-title">Medios de pago y cuotas</span>
+            <button class="btn-x">✕</button>
+          </div>
+          <div class="modal-top-divider"></div>
+          <div class="modal-scroll" style="max-height:580px">
+            <div class="modal-body">
+              <div class="sec-head">
+                <div class="sec-head-row">
+                  <img class="icon24" src="https://www.figma.com/api/mcp/asset/e8fb427b-be12-4ece-9504-358b0cf27749" alt="">
+                  <span class="sec-head-title" style="font-weight:600">Tarjetas de crédito</span>
+                </div>
+                <span class="sec-head-sub">Acreditación instantánea</span>
+              </div>
+              <!-- 1 cuota -->
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--c-500)">Disponible para todos</span>
+                <div style="display:flex;align-items:center;gap:10px;padding:10px 0">
+                  <div style="min-width:110px;font-size:14px;font-weight:600;color:var(--c-950)">1 cuota</div>
+                  <div class="all-bk"><img class="icon24" src="https://www.figma.com/api/mcp/asset/5db0c0a0-1f55-434e-85df-07632cb41342" alt=""><span class="all-bk-lbl">Todos los bancos · VISA y Mastercard</span></div>
+                </div>
+              </div>
+              <div class="divider"></div>
+              <!-- SIN INTERÉS -->
+              <div class="v2-group">
+                <div class="v2-group-head green">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="7" fill="#23A423"/><path d="M4 7l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <span class="v2-group-title green">Sin interés</span>
+                </div>
+                <div class="v2-brow">
+                  <div class="v2-cuotas"><div class="v2-cuotas-num">3 cuotas</div><div class="v2-cuotas-tipo g">sin interés</div></div>
+                  <div class="v2-banks">
+                    <img class="bk" src="https://www.figma.com/api/mcp/asset/e35db589-4fd9-41ca-84f4-767be2a0bf32" alt="Banco Ciudad">
+                    <img class="bk" src="https://www.figma.com/api/mcp/asset/d2dd2d73-7ee9-4861-825c-9b7dc16334ba" alt="Galicia">
+                    <img class="bk" src="https://www.figma.com/api/mcp/asset/13b67f26-5786-4719-b9c5-caca3f3c6a11" alt="Macro">
+                    <img class="bk" src="https://www.figma.com/api/mcp/asset/396dbbfe-de7b-4d48-8bfc-f31222955cb6" alt="Santander">
+                    <img class="bk" src="https://www.figma.com/api/mcp/asset/a7f01aee-a16b-4d46-a216-b67a9b3f288a" alt="BBVA">
+                  </div>
+                  <div class="v2-card-badges"><span class="cb visa">VISA</span></div>
+                </div>
+                <div class="v2-brow">
+                  <div class="v2-cuotas"><div class="v2-cuotas-num">6 cuotas</div><div class="v2-cuotas-tipo g">sin interés</div></div>
+                  <div class="v2-banks">
+                    <span class="bk-text cf">Comafi</span>
+                    <span class="badge general" style="margin-left:2px">Cartera habilitada</span>
+                  </div>
+                  <div class="v2-card-badges"><span class="cb visa">VISA</span></div>
+                </div>
+              </div>
+              <!-- EXCLUSIVO -->
+              <div class="v2-group">
+                <div class="v2-group-head exclusive">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1l1.8 3.6L13 5.4l-3 2.9.7 4.1L7 10.4l-3.7 1.9L4 8.3 1 5.4l4.2-.8L7 1z" fill="#226FCB"/></svg>
+                  <span class="v2-group-title exclusive">Exclusivo por segmento</span>
+                </div>
+                <div class="v2-excl">
+                  <div class="v2-excl-row">
+                    <span class="v2-excl-title">9 cuotas sin interés</span>
+                    <span class="bk-text cf-black">Comafi Único Black</span>
+                    <span class="badge bin">BIN exclusivo</span>
+                    <div class="v2-card-badges"><span class="cb visa">VISA</span></div>
+                  </div>
+                  <span class="v2-excl-note">Aplica únicamente a BINES habilitados de Comafi Único Black. No válido para la cartera general Comafi.</span>
+                </div>
+              </div>
+              <div class="divider"></div>
+              <!-- CON INTERÉS -->
+              <div class="v2-group">
+                <div class="v2-group-head neutral">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#5E5E5E" stroke-width="1.2"/><path d="M5 7h4" stroke="#5E5E5E" stroke-width="1.2" stroke-linecap="round"/></svg>
+                  <span class="v2-group-title neutral">Con interés</span>
+                </div>
+                <div class="v2-brow">
+                  <div class="v2-cuotas"><div class="v2-cuotas-num">3 cuotas</div><div class="v2-cuotas-tipo r">con interés</div></div>
+                  <div class="v2-banks">
+                    <img class="bk" src="https://www.figma.com/api/mcp/asset/95ed5d36-7871-4750-a7e7-748e4b6311d3" alt="Credicoop">
+                    <img class="bk" style="max-width:26px" src="https://www.figma.com/api/mcp/asset/ebb4ab15-adcb-4500-a51a-2cf8fb5f4ead" alt="Itaú">
+                    <span class="bk-text sv">Supervielle</span>
+                  </div>
+                  <div class="v2-card-badges"><span class="cb visa">VISA</span><span class="cb mc">MC</span></div>
+                </div>
+                <div class="v2-brow">
+                  <div class="v2-cuotas"><div class="v2-cuotas-num">6 cuotas</div><div class="v2-cuotas-tipo r">con interés</div></div>
+                  <div class="v2-banks">
+                    <img class="bk" src="https://www.figma.com/api/mcp/asset/13b67f26-5786-4719-b9c5-caca3f3c6a11" alt="Macro">
+                    <img class="bk" src="https://www.figma.com/api/mcp/asset/396dbbfe-de7b-4d48-8bfc-f31222955cb6" alt="Santander">
+                    <img class="bk" src="https://www.figma.com/api/mcp/asset/a7f01aee-a16b-4d46-a216-b67a9b3f288a" alt="BBVA</div>">
+                  </div>
+                  <div class="v2-card-badges"><span class="cb visa">VISA</span><span class="cb mc">MC</span></div>
+                </div>
+              </div>
+              <div class="divider"></div>
+              <div class="sec-head">
+                <div class="sec-head-row">
+                  <img class="icon24" src="https://www.figma.com/api/mcp/asset/6cc0ba03-3f21-4490-9547-7997182d0fcf" alt="">
+                  <span class="sec-head-title" style="font-weight:600">Transferencia o Depósito</span>
+                </div>
+                <span class="transfer-note">La reserva estará vigente durante 2 horas hasta que realice su pago.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="showcase-col">
+      <h3>Mobile</h3>
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="modal-mobile">
+            <div class="modal-head">
+              <span class="modal-head-title sm">Medios de pago y cuotas</span>
+              <button class="btn-x">✕</button>
+            </div>
+            <div class="modal-top-divider"></div>
+            <div class="modal-scroll">
+              <div class="modal-body">
+                <div class="sec-head">
+                  <div class="sec-head-row">
+                    <img class="icon24" src="https://www.figma.com/api/mcp/asset/e8fb427b-be12-4ece-9504-358b0cf27749" alt="">
+                    <span class="sec-head-title" style="font-weight:600">Tarjetas de crédito</span>
+                  </div>
+                  <span class="sec-head-sub">Acreditación instantánea</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;padding:8px 0">
+                  <span style="font-size:13.5px;font-weight:600;color:var(--c-950);min-width:80px">1 cuota</span>
+                  <div class="all-bk"><img class="icon24" src="https://www.figma.com/api/mcp/asset/5db0c0a0-1f55-434e-85df-07632cb41342" alt=""><span class="all-bk-lbl">Todos los bancos</span></div>
+                </div>
+                <div class="divider"></div>
+                <div class="v2-group">
+                  <div class="v2-group-head green">
+                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="7" fill="#23A423"/><path d="M4 7l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span class="v2-group-title green">Sin interés</span>
+                  </div>
+                  <div class="v2-brow" style="flex-wrap:wrap">
+                    <div class="v2-cuotas"><div class="v2-cuotas-num">3 cuotas</div><div class="v2-cuotas-tipo g">sin interés</div></div>
+                    <div class="v2-banks" style="min-width:100%">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/e35db589-4fd9-41ca-84f4-767be2a0bf32" alt="Banco Ciudad">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/d2dd2d73-7ee9-4861-825c-9b7dc16334ba" alt="Galicia">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/13b67f26-5786-4719-b9c5-caca3f3c6a11" alt="Macro">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/396dbbfe-de7b-4d48-8bfc-f31222955cb6" alt="Santander">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/a7f01aee-a16b-4d46-a216-b67a9b3f288a" alt="BBVA">
+                      <span class="cb visa">VISA</span>
+                    </div>
+                  </div>
+                  <div class="v2-brow" style="flex-wrap:wrap">
+                    <div class="v2-cuotas"><div class="v2-cuotas-num">6 cuotas</div><div class="v2-cuotas-tipo g">sin interés</div></div>
+                    <div class="v2-banks" style="min-width:100%"><span class="bk-text cf">Comafi</span><span class="badge general">Cartera habilitada</span><span class="cb visa">VISA</span></div>
+                  </div>
+                </div>
+                <div class="v2-group" style="margin-top:8px">
+                  <div class="v2-group-head exclusive">
+                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 1l1.8 3.6L13 5.4l-3 2.9.7 4.1L7 10.4l-3.7 1.9L4 8.3 1 5.4l4.2-.8L7 1z" fill="#226FCB"/></svg>
+                    <span class="v2-group-title exclusive">Exclusivo por segmento</span>
+                  </div>
+                  <div class="v2-excl">
+                    <div class="v2-excl-row">
+                      <span class="v2-excl-title">9 cuotas sin interés</span>
+                      <span class="bk-text cf-black">Único Black</span>
+                      <span class="badge bin">BIN</span>
+                    </div>
+                    <span class="v2-excl-note">Solo BINES habilitados de Comafi Único Black.</span>
+                  </div>
+                </div>
+                <div class="divider" style="margin-top:8px"></div>
+                <div class="v2-group">
+                  <div class="v2-group-head neutral">
+                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#5E5E5E" stroke-width="1.2"/><path d="M5 7h4" stroke="#5E5E5E" stroke-width="1.2" stroke-linecap="round"/></svg>
+                    <span class="v2-group-title neutral">Con interés</span>
+                  </div>
+                  <div class="v2-brow" style="flex-wrap:wrap">
+                    <div class="v2-cuotas"><div class="v2-cuotas-num">3 cuotas</div><div class="v2-cuotas-tipo r">con interés</div></div>
+                    <div class="v2-banks" style="min-width:100%"><img class="bk" src="https://www.figma.com/api/mcp/asset/95ed5d36-7871-4750-a7e7-748e4b6311d3" alt="Credicoop"><img class="bk" style="max-width:26px" src="https://www.figma.com/api/mcp/asset/ebb4ab15-adcb-4500-a51a-2cf8fb5f4ead" alt="Itaú"><span class="bk-text sv">Supervielle</span></div>
+                  </div>
+                  <div class="v2-brow" style="flex-wrap:wrap">
+                    <div class="v2-cuotas"><div class="v2-cuotas-num">6 cuotas</div><div class="v2-cuotas-tipo r">con interés</div></div>
+                    <div class="v2-banks" style="min-width:100%"><img class="bk" src="https://www.figma.com/api/mcp/asset/13b67f26-5786-4719-b9c5-caca3f3c6a11" alt="Macro"><img class="bk" src="https://www.figma.com/api/mcp/asset/396dbbfe-de7b-4d48-8bfc-f31222955cb6" alt="Santander"><img class="bk" src="https://www.figma.com/api/mcp/asset/a7f01aee-a16b-4d46-a216-b67a9b3f288a" alt="BBVA"></div>
+                  </div>
+                </div>
+                <div class="divider"></div>
+                <div class="sec-head">
+                  <div class="sec-head-row">
+                    <img class="icon24" src="https://www.figma.com/api/mcp/asset/6cc0ba03-3f21-4490-9547-7997182d0fcf" alt="">
+                    <span class="sec-head-title" style="font-weight:600">Transferencia o Depósito</span>
+                  </div>
+                  <span class="transfer-note">La reserva estará vigente durante 2 horas hasta que realice su pago.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     VARIANTE 3 — MODULAR / CARDS
+════════════════════════════════════════ -->
+<div id="tab-v3" class="section">
+  <div class="section-intro">
+    <span class="chip">Variante 3 — Modular</span>
+    <h2>Bloques separados por nivel de beneficio y condición</h2>
+    <p>Cada nivel de cuotas es un card con header color-coded. Comafi tiene su propio card diferenciado con fondo oscuro, dejando absolutamente claro que sus dos beneficios aplican a segmentos distintos. El número de cuotas es el elemento dominante en cada fila.</p>
+    <ul>
+      <li>Cards por nivel: 1 cuota, sin interés, exclusivo Comafi, con interés</li>
+      <li>Comafi Único Black en fondo oscuro — visualmente imposible de confundir</li>
+      <li>Números de cuota grandes como eje de lectura principal</li>
+    </ul>
+  </div>
+  <div class="showcase">
+    <div class="showcase-col">
+      <h3>Desktop</h3>
+      <div class="desktop-area">
+        <div class="modal">
+          <div class="modal-head">
+            <span class="modal-head-title">Medios de pago y cuotas</span>
+            <button class="btn-x">✕</button>
+          </div>
+          <div class="modal-top-divider"></div>
+          <div class="modal-scroll" style="max-height:600px">
+            <div class="modal-body">
+              <div class="sec-head">
+                <div class="sec-head-row">
+                  <img class="icon24" src="https://www.figma.com/api/mcp/asset/e8fb427b-be12-4ece-9504-358b0cf27749" alt="">
+                  <span class="sec-head-title" style="font-weight:600">Tarjetas de crédito</span>
+                </div>
+                <span class="sec-head-sub">Acreditación instantánea</span>
+              </div>
+              <div class="v3-card">
+                <div class="v3-card-head gen"><span class="v3-card-title gen">Disponible para todos · VISA y Mastercard</span></div>
+                <div class="v3-row">
+                  <div class="v3-num"><div class="v3-n neutral">1</div><div class="v3-t n">cuota</div></div>
+                  <div class="v3-bks"><img class="icon24" src="https://www.figma.com/api/mcp/asset/5db0c0a0-1f55-434e-85df-07632cb41342" alt=""><span style="font-size:13px;color:var(--c-950)">Todos los bancos habilitados</span></div>
+                </div>
+              </div>
+              <div class="v3-card">
+                <div class="v3-card-head green"><span class="v3-card-title green">Sin interés · VISA</span></div>
+                <div class="v3-row">
+                  <div class="v3-num"><div class="v3-n g">3</div><div class="v3-t g">cuotas</div></div>
+                  <div class="v3-bks">
+                    <img class="bk" src="https://www.figma.com/api/mcp/asset/e35db589-4fd9-41ca-84f4-767be2a0bf32" alt="Banco Ciudad">
+                    <img class="bk" src="https://www.figma.com/api/mcp/asset/d2dd2d73-7ee9-4861-825c-9b7dc16334ba" alt="Galicia">
+                    <img class="bk" src="https://www.figma.com/api/mcp/asset/13b67f26-5786-4719-b9c5-caca3f3c6a11" alt="Macro">
+                    <img class="bk" src="https://www.figma.com/api/mcp/asset/396dbbfe-de7b-4d48-8bfc-f31222955cb6" alt="Santander">
+                    <img class="bk" src="https://www.figma.com/api/mcp/asset/a7f01aee-a16b-4d46-a216-b67a9b3f288a" alt="BBVA">
+                  </div>
+                </div>
+              </div>
+              <div class="v3-comafi-card">
+                <div class="v3-comafi-head">
+                  <span class="v3-comafi-head-title">Banco Comafi · VISA</span>
+                  <span class="v3-comafi-head-badge">Condición especial</span>
+                </div>
+                <div class="v3-row">
+                  <div class="v3-num"><div class="v3-n g">6</div><div class="v3-t g">cuotas</div></div>
+                  <div class="v3-bks">
+                    <span class="bk-text cf">Comafi</span>
+                    <span class="badge general">Cartera habilitada</span>
+                    <span style="font-size:12px;color:var(--c-600)">Sin interés para todos los clientes Comafi</span>
+                  </div>
+                </div>
+                <div class="v3-row dark">
+                  <div class="v3-num"><div class="v3-n w">9</div><div class="v3-t w">cuotas</div></div>
+                  <div class="v3-bks">
+                    <span class="bk-text cf-black">Comafi Único Black</span>
+                    <span class="badge bin">BIN exclusivo</span>
+                    <span style="font-size:11.5px;color:rgba(255,255,255,.5)">Solo BINES habilitados Único Black</span>
+                  </div>
+                </div>
+              </div>
+              <div class="v3-card">
+                <div class="v3-card-head red"><span class="v3-card-title red">Con interés · VISA y Mastercard</span></div>
+                <div class="v3-row">
+                  <div class="v3-num"><div class="v3-n r">3</div><div class="v3-t r">cuotas</div></div>
+                  <div class="v3-bks">
+                    <img class="bk" src="https://www.figma.com/api/mcp/asset/95ed5d36-7871-4750-a7e7-748e4b6311d3" alt="Credicoop">
+                    <img class="bk" style="max-width:26px" src="https://www.figma.com/api/mcp/asset/ebb4ab15-adcb-4500-a51a-2cf8fb5f4ead" alt="Itaú">
+                    <span class="bk-text sv">Supervielle</span>
+                  </div>
+                </div>
+                <div class="v3-row">
+                  <div class="v3-num"><div class="v3-n r">6</div><div class="v3-t r">cuotas</div></div>
+                  <div class="v3-bks">
+                    <img class="bk" src="https://www.figma.com/api/mcp/asset/13b67f26-5786-4719-b9c5-caca3f3c6a11" alt="Macro">
+                    <img class="bk" src="https://www.figma.com/api/mcp/asset/396dbbfe-de7b-4d48-8bfc-f31222955cb6" alt="Santander">
+                    <img class="bk" src="https://www.figma.com/api/mcp/asset/a7f01aee-a16b-4d46-a216-b67a9b3f288a" alt="BBVA">
+                    <span style="font-size:11px;color:var(--c-500)">(VISA)</span>
+                    <img class="bk" src="https://www.figma.com/api/mcp/asset/13b67f26-5786-4719-b9c5-caca3f3c6a11" alt="Macro">
+                    <img class="bk" src="https://www.figma.com/api/mcp/asset/396dbbfe-de7b-4d48-8bfc-f31222955cb6" alt="Santander">
+                    <span style="font-size:11px;color:var(--c-500)">(MC)</span>
+                  </div>
+                </div>
+              </div>
+              <div class="divider"></div>
+              <div class="sec-head">
+                <div class="sec-head-row">
+                  <img class="icon24" src="https://www.figma.com/api/mcp/asset/6cc0ba03-3f21-4490-9547-7997182d0fcf" alt="">
+                  <span class="sec-head-title" style="font-weight:600">Transferencia o Depósito</span>
+                </div>
+                <span class="transfer-note">La reserva estará vigente durante 2 horas hasta que realice su pago.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="showcase-col">
+      <h3>Mobile</h3>
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="modal-mobile">
+            <div class="modal-head">
+              <span class="modal-head-title sm">Medios de pago y cuotas</span>
+              <button class="btn-x">✕</button>
+            </div>
+            <div class="modal-top-divider"></div>
+            <div class="modal-scroll">
+              <div class="modal-body">
+                <div class="sec-head">
+                  <div class="sec-head-row">
+                    <img class="icon24" src="https://www.figma.com/api/mcp/asset/e8fb427b-be12-4ece-9504-358b0cf27749" alt="">
+                    <span class="sec-head-title" style="font-weight:600">Tarjetas de crédito</span>
+                  </div>
+                  <span class="sec-head-sub">Acreditación instantánea</span>
+                </div>
+                <div class="v3-card">
+                  <div class="v3-card-head gen"><span class="v3-card-title gen">Disponible para todos</span></div>
+                  <div class="v3-row">
+                    <div class="v3-num"><div class="v3-n neutral">1</div><div class="v3-t n">cuota</div></div>
+                    <div class="v3-bks"><img class="icon24" src="https://www.figma.com/api/mcp/asset/5db0c0a0-1f55-434e-85df-07632cb41342" alt=""><span style="font-size:12.5px;color:var(--c-950)">Todos los bancos</span></div>
+                  </div>
+                </div>
+                <div class="v3-card">
+                  <div class="v3-card-head green"><span class="v3-card-title green">Sin interés · VISA</span></div>
+                  <div class="v3-row" style="flex-wrap:wrap">
+                    <div class="v3-num"><div class="v3-n g">3</div><div class="v3-t g">cuotas</div></div>
+                    <div class="v3-bks">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/e35db589-4fd9-41ca-84f4-767be2a0bf32" alt="Banco Ciudad">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/d2dd2d73-7ee9-4861-825c-9b7dc16334ba" alt="Galicia">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/13b67f26-5786-4719-b9c5-caca3f3c6a11" alt="Macro">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/396dbbfe-de7b-4d48-8bfc-f31222955cb6" alt="Santander">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/a7f01aee-a16b-4d46-a216-b67a9b3f288a" alt="BBVA">
+                    </div>
+                  </div>
+                </div>
+                <div class="v3-comafi-card">
+                  <div class="v3-comafi-head">
+                    <span class="v3-comafi-head-title">Banco Comafi · VISA</span>
+                    <span class="v3-comafi-head-badge">Cond. especial</span>
+                  </div>
+                  <div class="v3-row">
+                    <div class="v3-num"><div class="v3-n g">6</div><div class="v3-t g">cuotas</div></div>
+                    <div class="v3-bks"><span class="bk-text cf">Comafi</span><span class="badge general">Cartera</span></div>
+                  </div>
+                  <div class="v3-row dark">
+                    <div class="v3-num"><div class="v3-n w">9</div><div class="v3-t w">cuotas</div></div>
+                    <div class="v3-bks">
+                      <span class="bk-text cf-black">Único Black</span>
+                      <span class="badge bin">BIN exclusivo</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="v3-card">
+                  <div class="v3-card-head red"><span class="v3-card-title red">Con interés</span></div>
+                  <div class="v3-row">
+                    <div class="v3-num"><div class="v3-n r">3</div><div class="v3-t r">cuotas</div></div>
+                    <div class="v3-bks"><img class="bk" src="https://www.figma.com/api/mcp/asset/95ed5d36-7871-4750-a7e7-748e4b6311d3" alt="Credicoop"><img class="bk" style="max-width:26px" src="https://www.figma.com/api/mcp/asset/ebb4ab15-adcb-4500-a51a-2cf8fb5f4ead" alt="Itaú"><span class="bk-text sv">Supervielle</span></div>
+                  </div>
+                  <div class="v3-row">
+                    <div class="v3-num"><div class="v3-n r">6</div><div class="v3-t r">cuotas</div></div>
+                    <div class="v3-bks"><img class="bk" src="https://www.figma.com/api/mcp/asset/13b67f26-5786-4719-b9c5-caca3f3c6a11" alt="Macro"><img class="bk" src="https://www.figma.com/api/mcp/asset/396dbbfe-de7b-4d48-8bfc-f31222955cb6" alt="Santander"><img class="bk" src="https://www.figma.com/api/mcp/asset/a7f01aee-a16b-4d46-a216-b67a9b3f288a" alt="BBVA"></div>
+                  </div>
+                </div>
+                <div class="divider"></div>
+                <div class="sec-head">
+                  <div class="sec-head-row">
+                    <img class="icon24" src="https://www.figma.com/api/mcp/asset/6cc0ba03-3f21-4490-9547-7997182d0fcf" alt="">
+                    <span class="sec-head-title" style="font-weight:600">Transferencia o Depósito</span>
+                  </div>
+                  <span class="transfer-note">La reserva estará vigente durante 2 horas hasta que realice su pago.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     VARIANTE 4 — SINTÉTICA / ESCANEABLE
+════════════════════════════════════════ -->
+<div id="tab-v4" class="section">
+  <div class="section-intro">
+    <span class="chip">Variante 4 — Sintética</span>
+    <h2>Escaneo ultra-rápido con tabs internos por tarjeta</h2>
+    <p>Tabs VISA / Mastercard dentro del modal para separar contextos. Lista compacta con número de cuotas prominente, tipo de beneficio y logos. Comafi tiene su propio bloque oscuro separado visualmente del resto, con nota informativa en amber para el caso BIN exclusivo.</p>
+    <ul>
+      <li>Tabs internos: VISA / Mastercard — sin scroll largo para cambiar de tarjeta</li>
+      <li>Números de cuota grandes + tipo en 2 líneas — lectura en menos de 1 segundo</li>
+      <li>Nota amber contextual para BIN: visible, pero no compite con la jerarquía principal</li>
+    </ul>
+  </div>
+  <div class="showcase">
+    <div class="showcase-col">
+      <h3>Desktop</h3>
+      <div class="desktop-area">
+        <div class="modal">
+          <div class="modal-head">
+            <span class="modal-head-title">Medios de pago y cuotas</span>
+            <button class="btn-x">✕</button>
+          </div>
+          <div class="modal-top-divider"></div>
+          <div class="modal-scroll" style="max-height:540px">
+            <div class="modal-body">
+              <div class="sec-head">
+                <div class="sec-head-row">
+                  <img class="icon24" src="https://www.figma.com/api/mcp/asset/e8fb427b-be12-4ece-9504-358b0cf27749" alt="">
+                  <span class="sec-head-title" style="font-weight:600">Tarjetas de crédito</span>
+                </div>
+                <span class="sec-head-sub">Acreditación instantánea</span>
+              </div>
+              <div class="inner-tabs" id="desktop-tabs">
+                <div class="i-tab active" onclick="switchTab(this,'dt-visa')">VISA</div>
+                <div class="i-tab" onclick="switchTab(this,'dt-mc')">Mastercard</div>
+              </div>
+              <!-- VISA panel -->
+              <div id="dt-visa" class="v4-panel active">
+                <div class="v4-list">
+                  <div class="v4-row alt">
+                    <div class="v4-c"><div class="v4-n neutral">1</div><div class="v4-t n">cuota</div></div>
+                    <div class="v4-bks"><img class="icon24" src="https://www.figma.com/api/mcp/asset/5db0c0a0-1f55-434e-85df-07632cb41342" alt=""><span style="font-size:13px;color:var(--c-950)">Todos los bancos</span></div>
+                  </div>
+                  <div class="v4-row">
+                    <div class="v4-c"><div class="v4-n g">3</div><div class="v4-t g">sin interés</div></div>
+                    <div class="v4-bks">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/e35db589-4fd9-41ca-84f4-767be2a0bf32" alt="Banco Ciudad">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/d2dd2d73-7ee9-4861-825c-9b7dc16334ba" alt="Galicia">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/13b67f26-5786-4719-b9c5-caca3f3c6a11" alt="Macro">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/396dbbfe-de7b-4d48-8bfc-f31222955cb6" alt="Santander">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/a7f01aee-a16b-4d46-a216-b67a9b3f288a" alt="BBVA">
+                    </div>
+                  </div>
+                  <div class="v4-row excl">
+                    <div class="v4-c"><div class="v4-n g">6</div><div class="v4-t g">sin interés</div></div>
+                    <div class="v4-bks"><span class="bk-text cf">Comafi</span><span class="badge general">Cartera habilitada</span></div>
+                  </div>
+                  <div class="v4-row dark">
+                    <div class="v4-c"><div class="v4-n white">9</div><div class="v4-t w">sin interés</div></div>
+                    <div class="v4-bks"><span class="bk-text cf-black">Comafi Único Black</span><span class="badge bin">BIN exclusivo</span></div>
+                  </div>
+                  <div class="v4-row alt">
+                    <div class="v4-c"><div class="v4-n r">3</div><div class="v4-t r">con interés</div></div>
+                    <div class="v4-bks">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/95ed5d36-7871-4750-a7e7-748e4b6311d3" alt="Credicoop">
+                      <img class="bk" style="max-width:26px" src="https://www.figma.com/api/mcp/asset/ebb4ab15-adcb-4500-a51a-2cf8fb5f4ead" alt="Itaú">
+                      <span class="bk-text sv">Supervielle</span>
+                    </div>
+                  </div>
+                  <div class="v4-row">
+                    <div class="v4-c"><div class="v4-n r">6</div><div class="v4-t r">con interés</div></div>
+                    <div class="v4-bks">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/13b67f26-5786-4719-b9c5-caca3f3c6a11" alt="Macro">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/396dbbfe-de7b-4d48-8bfc-f31222955cb6" alt="Santander">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/a7f01aee-a16b-4d46-a216-b67a9b3f288a" alt="BBVA">
+                    </div>
+                  </div>
+                </div>
+                <div class="v4-note">
+                  <span class="v4-note-ico">⚠️</span>
+                  <span class="v4-note-txt"><b>9 cuotas sin interés</b> aplica solo a BINES habilitados de <b>Comafi Único Black</b>. Las 6 cuotas sin interés están disponibles para toda la cartera habilitada de Comafi.</span>
+                </div>
+              </div>
+              <!-- MC panel -->
+              <div id="dt-mc" class="v4-panel">
+                <div class="v4-list">
+                  <div class="v4-row alt">
+                    <div class="v4-c"><div class="v4-n neutral">1</div><div class="v4-t n">cuota</div></div>
+                    <div class="v4-bks"><img class="icon24" src="https://www.figma.com/api/mcp/asset/5db0c0a0-1f55-434e-85df-07632cb41342" alt=""><span style="font-size:13px;color:var(--c-950)">Todos los bancos</span></div>
+                  </div>
+                  <div class="v4-row">
+                    <div class="v4-c"><div class="v4-n r">3</div><div class="v4-t r">con interés</div></div>
+                    <div class="v4-bks">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/95ed5d36-7871-4750-a7e7-748e4b6311d3" alt="Credicoop">
+                      <img class="bk" style="max-width:26px" src="https://www.figma.com/api/mcp/asset/ebb4ab15-adcb-4500-a51a-2cf8fb5f4ead" alt="Itaú">
+                      <span class="bk-text sv">Supervielle</span>
+                    </div>
+                  </div>
+                  <div class="v4-row alt">
+                    <div class="v4-c"><div class="v4-n r">6</div><div class="v4-t r">con interés</div></div>
+                    <div class="v4-bks">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/13b67f26-5786-4719-b9c5-caca3f3c6a11" alt="Macro">
+                      <img class="bk" src="https://www.figma.com/api/mcp/asset/396dbbfe-de7b-4d48-8bfc-f31222955cb6" alt="Santander">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="divider"></div>
+              <div class="sec-head">
+                <div class="sec-head-row">
+                  <img class="icon24" src="https://www.figma.com/api/mcp/asset/6cc0ba03-3f21-4490-9547-7997182d0fcf" alt="">
+                  <span class="sec-head-title" style="font-weight:600">Transferencia o Depósito</span>
+                </div>
+                <span class="transfer-note">La reserva estará vigente durante 2 horas hasta que realice su pago.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="showcase-col">
+      <h3>Mobile</h3>
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="modal-mobile">
+            <div class="modal-head">
+              <span class="modal-head-title sm">Medios de pago y cuotas</span>
+              <button class="btn-x">✕</button>
+            </div>
+            <div class="modal-top-divider"></div>
+            <div class="modal-scroll">
+              <div class="modal-body">
+                <div class="sec-head">
+                  <div class="sec-head-row">
+                    <img class="icon24" src="https://www.figma.com/api/mcp/asset/e8fb427b-be12-4ece-9504-358b0cf27749" alt="">
+                    <span class="sec-head-title" style="font-weight:600">Tarjetas de crédito</span>
+                  </div>
+                  <span class="sec-head-sub">Acreditación instantánea</span>
+                </div>
+                <div class="inner-tabs" id="mobile-tabs">
+                  <div class="i-tab active" onclick="switchTab(this,'mt-visa')">VISA</div>
+                  <div class="i-tab" onclick="switchTab(this,'mt-mc')">Mastercard</div>
+                </div>
+                <div id="mt-visa" class="v4-panel active">
+                  <div class="v4-list">
+                    <div class="v4-row alt">
+                      <div class="v4-c"><div class="v4-n neutral">1</div><div class="v4-t n">cuota</div></div>
+                      <div class="v4-bks"><img class="icon24" src="https://www.figma.com/api/mcp/asset/5db0c0a0-1f55-434e-85df-07632cb41342" alt=""><span style="font-size:12px;color:var(--c-950)">Todos los bancos</span></div>
+                    </div>
+                    <div class="v4-row">
+                      <div class="v4-c"><div class="v4-n g">3</div><div class="v4-t g">sin interés</div></div>
+                      <div class="v4-bks">
+                        <img class="bk" src="https://www.figma.com/api/mcp/asset/e35db589-4fd9-41ca-84f4-767be2a0bf32" alt="Banco Ciudad">
+                        <img class="bk" src="https://www.figma.com/api/mcp/asset/d2dd2d73-7ee9-4861-825c-9b7dc16334ba" alt="Galicia">
+                        <img class="bk" src="https://www.figma.com/api/mcp/asset/13b67f26-5786-4719-b9c5-caca3f3c6a11" alt="Macro">
+                        <img class="bk" src="https://www.figma.com/api/mcp/asset/396dbbfe-de7b-4d48-8bfc-f31222955cb6" alt="Santander">
+                        <img class="bk" src="https://www.figma.com/api/mcp/asset/a7f01aee-a16b-4d46-a216-b67a9b3f288a" alt="BBVA">
+                      </div>
+                    </div>
+                    <div class="v4-row excl">
+                      <div class="v4-c"><div class="v4-n g">6</div><div class="v4-t g">sin interés</div></div>
+                      <div class="v4-bks"><span class="bk-text cf">Comafi</span><span class="badge general">Cartera</span></div>
+                    </div>
+                    <div class="v4-row dark">
+                      <div class="v4-c"><div class="v4-n white">9</div><div class="v4-t w">sin interés</div></div>
+                      <div class="v4-bks"><span class="bk-text cf-black">Único Black</span><span class="badge bin">BIN</span></div>
+                    </div>
+                    <div class="v4-row alt">
+                      <div class="v4-c"><div class="v4-n r">3</div><div class="v4-t r">con interés</div></div>
+                      <div class="v4-bks"><img class="bk" src="https://www.figma.com/api/mcp/asset/95ed5d36-7871-4750-a7e7-748e4b6311d3" alt="Credicoop"><img class="bk" style="max-width:26px" src="https://www.figma.com/api/mcp/asset/ebb4ab15-adcb-4500-a51a-2cf8fb5f4ead" alt="Itaú"><span class="bk-text sv">Supervielle</span></div>
+                    </div>
+                    <div class="v4-row">
+                      <div class="v4-c"><div class="v4-n r">6</div><div class="v4-t r">con interés</div></div>
+                      <div class="v4-bks"><img class="bk" src="https://www.figma.com/api/mcp/asset/13b67f26-5786-4719-b9c5-caca3f3c6a11" alt="Macro"><img class="bk" src="https://www.figma.com/api/mcp/asset/396dbbfe-de7b-4d48-8bfc-f31222955cb6" alt="Santander"><img class="bk" src="https://www.figma.com/api/mcp/asset/a7f01aee-a16b-4d46-a216-b67a9b3f288a" alt="BBVA"></div>
+                    </div>
+                  </div>
+                  <div class="v4-note">
+                    <span class="v4-note-ico">⚠️</span>
+                    <span class="v4-note-txt"><b>9 cuotas</b> solo para BINES habilitados Comafi Único Black.</span>
+                  </div>
+                </div>
+                <div id="mt-mc" class="v4-panel">
+                  <div class="v4-list">
+                    <div class="v4-row alt">
+                      <div class="v4-c"><div class="v4-n neutral">1</div><div class="v4-t n">cuota</div></div>
+                      <div class="v4-bks"><img class="icon24" src="https://www.figma.com/api/mcp/asset/5db0c0a0-1f55-434e-85df-07632cb41342" alt=""><span style="font-size:12px;color:var(--c-950)">Todos los bancos</span></div>
+                    </div>
+                    <div class="v4-row">
+                      <div class="v4-c"><div class="v4-n r">3</div><div class="v4-t r">con interés</div></div>
+                      <div class="v4-bks"><img class="bk" src="https://www.figma.com/api/mcp/asset/95ed5d36-7871-4750-a7e7-748e4b6311d3" alt="Credicoop"><img class="bk" style="max-width:26px" src="https://www.figma.com/api/mcp/asset/ebb4ab15-adcb-4500-a51a-2cf8fb5f4ead" alt="Itaú"><span class="bk-text sv">Supervielle</span></div>
+                    </div>
+                    <div class="v4-row alt">
+                      <div class="v4-c"><div class="v4-n r">6</div><div class="v4-t r">con interés</div></div>
+                      <div class="v4-bks"><img class="bk" src="https://www.figma.com/api/mcp/asset/13b67f26-5786-4719-b9c5-caca3f3c6a11" alt="Macro"><img class="bk" src="https://www.figma.com/api/mcp/asset/396dbbfe-de7b-4d48-8bfc-f31222955cb6" alt="Santander"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="divider"></div>
+                <div class="sec-head">
+                  <div class="sec-head-row">
+                    <img class="icon24" src="https://www.figma.com/api/mcp/asset/6cc0ba03-3f21-4490-9547-7997182d0fcf" alt="">
+                    <span class="sec-head-title" style="font-weight:600">Transferencia o Depósito</span>
+                  </div>
+                  <span class="transfer-note">La reserva estará vigente durante 2 horas hasta que realice su pago.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav.tabs button').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+function switchTab(el, panelId) {
+  const parent = el.closest('.modal-body') || el.closest('.modal-scroll').querySelector('.modal-body') || document.getElementById('tab-v4');
+  const allTabs = el.parentElement.querySelectorAll('.i-tab');
+  allTabs.forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const panel = document.getElementById(panelId);
+  if (!panel) return;
+  const container = panel.parentElement;
+  container.querySelectorAll('.v4-panel').forEach(p => p.classList.remove('active'));
+  panel.classList.add('active');
+}
+</script>
+</body>
+</html>

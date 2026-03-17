@@ -1,0 +1,700 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Modal Medios de Pago — V2</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0f0f12;--c-50:#f8f8f8;--c-100:#eeeeee;--c-200:#dddddd;--c-400:#adadad;
+  --c-500:#858585;--c-600:#6b6b6b;--c-800:#404040;--c-950:#272626;
+  --blue:#226FCB;--blue-dk:#0D4E88;--blue-bg:#eef4ff;--blue-950:#051B30;
+  --ok:#23A423;--ok-dk:#166016;--ok-bg:#f0faf0;
+  --amber:#D97706;--amber-bg:#fffbeb;--amber-dk:#92400e;
+  --red:#FF5C7F;--font:'Outfit',system-ui,sans-serif}
+body{background:var(--bg);font-family:var(--font);color:var(--c-950);min-height:100vh}
+header{padding:16px 20px 8px;color:#fff}
+header h1{font-size:14px;font-weight:800;margin-bottom:2px}
+header p{font-size:10.5px;color:#888}
+nav.tabs{display:flex;gap:5px;padding:8px 16px;overflow-x:auto;border-bottom:1px solid rgba(255,255,255,.07)}
+nav.tabs::-webkit-scrollbar{height:0}
+nav.tabs button{padding:5px 12px;border:1px solid rgba(255,255,255,.1);background:transparent;color:#999;border-radius:20px;font-size:10.5px;font-weight:700;white-space:nowrap;cursor:pointer;font-family:var(--font);transition:all .15s}
+nav.tabs button.active{background:var(--blue);border-color:var(--blue);color:#fff}
+.section{display:none;padding:14px 16px}.section.active{display:block}
+.vtag{display:inline-flex;padding:2px 7px;background:rgba(34,111,203,.1);border-radius:3px;font-size:8.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#90bff5;margin-bottom:7px}
+.stitle{font-size:14px;font-weight:800;color:#fff;margin-bottom:3px;line-height:1.3}
+.desc{font-size:10.5px;color:#888;line-height:1.5;margin-bottom:12px}
+.desc ul{margin:5px 0 0 14px}.desc li{margin-bottom:2px}
+/* Phone */
+.phone{background:#1a1a28;border-radius:36px;padding:9px;width:274px;margin:0 auto;box-shadow:0 20px 60px rgba(0,0,0,.7);border:1.5px solid rgba(255,255,255,.07)}
+.screen{background:#f4f6f9;border-radius:28px;overflow:hidden;height:555px;position:relative}
+.modal{background:#fff;border-radius:18px 18px 0 0;position:absolute;bottom:0;left:0;right:0;height:calc(100% - 28px);display:flex;flex-direction:column;overflow:hidden}
+.mh{width:32px;height:3px;background:#ddd;border-radius:2px;margin:8px auto 0;flex-shrink:0}
+.mhead{padding:10px 14px 8px;border-bottom:1px solid var(--c-100);flex-shrink:0}
+.mhrow{display:flex;align-items:center;justify-content:space-between}
+.mhead h3{font-size:13px;font-weight:800}.mhead .sub{font-size:9px;color:var(--c-500);margin-top:1px}
+.mbody{overflow-y:auto;flex:1;padding:8px 12px 12px}
+.mbody::-webkit-scrollbar{width:3px}
+.mbody::-webkit-scrollbar-thumb{background:#ddd;border-radius:2px}
+/* Shared */
+.cat{display:flex;align-items:center;gap:6px;padding:6px 0 5px}
+.cat-icon{font-size:13px}.cat-name{font-size:11.5px;font-weight:700}.cat-sub{font-size:9px;color:var(--c-500)}
+.sdiv{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--c-400);padding:7px 0 3px;display:flex;align-items:center;gap:5px}
+.sdiv::after{content:'';flex:1;height:1px;background:var(--c-100)}
+img.bl{height:13px;object-fit:contain;max-width:46px}
+.chip{display:inline-flex;align-items:center;padding:1px 6px;border-radius:20px;font-size:7.5px;font-weight:800;letter-spacing:.04em;white-space:nowrap;border:1px solid}
+.chip.v{background:#f0f4ff;color:#1a1a6e;border-color:#c8d5f5}
+.chip.mc{background:#fff4f0;color:#8B1A00;border-color:#f5c8b4}
+.chip.ax{background:#f0f8ff;color:#005baa;border-color:#aad4f5}
+.bkt{display:inline-block;padding:1px 4px;border-radius:2px;font-size:7px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+.bkt.cf{background:#e6f4e6;color:#166016;border:1px solid rgba(22,96,22,.15)}
+.bkt.cfb{background:var(--blue-950);color:#90bff5;border:1px solid rgba(144,191,245,.15)}
+.bkt.sv{background:#b30000;color:#fff}
+/* Condition strips */
+.cs{display:flex;align-items:center;gap:4px;padding:3px 7px;border-radius:4px;font-size:8px;font-weight:600;margin-top:3px;border:1px solid}
+.cs.ok{background:var(--ok-bg);color:var(--ok-dk);border-color:rgba(35,164,35,.18)}
+.cs.bin{background:var(--amber-bg);color:var(--amber-dk);border-color:rgba(217,119,6,.18)}
+.cs.seg{background:var(--blue-950);color:#90bff5;border-color:rgba(144,191,245,.18)}
+/* ── POR BANCO ── */
+.bk{border:1px solid var(--c-100);border-radius:9px;overflow:hidden;margin-bottom:5px}
+.bk-h{display:flex;align-items:center;gap:7px;padding:8px 10px;cursor:pointer;background:#fff;transition:background .12s;user-select:none}
+.bk-h:active{background:var(--c-50)}
+.bk-logo{width:44px;flex-shrink:0;display:flex;align-items:center}
+.bk-name{font-size:10.5px;font-weight:700;flex:1;min-width:0}
+.bk-badges{display:flex;gap:3px;align-items:center;flex-wrap:wrap;flex-shrink:0}
+.bbd{padding:1px 5px;border-radius:3px;font-size:7.5px;font-weight:800;border:1px solid;white-space:nowrap}
+.bbd.csi{background:var(--ok-bg);color:var(--ok-dk);border-color:rgba(35,164,35,.2)}
+.bbd.cci{background:var(--c-50);color:var(--c-600);border-color:var(--c-200)}
+.bbd.exc{background:var(--blue-950);color:#90bff5;border-color:rgba(144,191,245,.2)}
+.tog{transition:transform .2s;font-size:9px;color:var(--c-400);flex-shrink:0}
+.bk-d{display:none;border-top:1px solid var(--c-100);background:var(--c-50)}
+.bk-d.open{display:block}
+.bdr{padding:7px 10px;border-bottom:1px solid var(--c-100)}
+.bdr:last-child{border-bottom:none}
+.bdl1{display:flex;align-items:center;gap:5px;margin-bottom:3px}
+.bn{font-size:15px;font-weight:900;color:var(--blue-dk);line-height:1}
+.bt-csi{font-size:8px;font-weight:700;color:var(--ok)}
+.bt-cci{font-size:8px;font-weight:600;color:var(--c-500)}
+.bdl2{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-bottom:2px}
+/* ── V1 POR BENEFICIO ── */
+.brow{padding:8px 0;border-top:1px solid var(--c-100)}
+.brow:first-child{border-top:none}
+.brl1{display:flex;align-items:baseline;gap:5px;margin-bottom:4px}
+.brn{font-size:18px;font-weight:900;color:var(--blue-dk);line-height:1}
+.brcsi{font-size:8.5px;font-weight:700;color:var(--ok)}
+.brcci{font-size:8.5px;font-weight:600;color:var(--c-500)}
+.brlogos{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+/* ── V2 FILTROS ── */
+.fgrp{display:flex;gap:3px;flex-wrap:wrap;padding-bottom:4px}
+.fgrp+.fgrp{padding-top:4px}
+.fwrap{padding:6px 0 9px;border-bottom:1px solid var(--c-100);margin-bottom:6px}
+.flbl{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--c-500);margin-bottom:3px}
+.fch{padding:3px 8px;border-radius:20px;font-size:8.5px;font-weight:700;border:1px solid var(--c-200);background:#fff;color:var(--c-600);cursor:pointer;font-family:var(--font)}
+.fch.active{background:var(--blue);border-color:var(--blue);color:#fff}
+.frow{padding:7px 0;border-bottom:1px solid var(--c-100)}
+.frow:last-child{border-bottom:none}
+.frl1{display:flex;align-items:center;gap:5px;margin-bottom:3px}
+.frn{font-size:14px;font-weight:900;color:var(--blue-dk)}
+.frcsi{font-size:8.5px;font-weight:700;color:var(--ok)}
+.frcci{font-size:8.5px;font-weight:600;color:var(--c-500)}
+.frbanks{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+/* ── V3 BLOQUES ── */
+.blk{border:1px solid var(--c-100);border-radius:9px;overflow:hidden;margin-bottom:7px}
+.blk.sp{border-color:rgba(34,111,203,.35);border-width:1.5px}
+.blk-h{padding:8px 11px;display:flex;align-items:center;justify-content:space-between}
+.blk-h.dark{background:var(--blue-950)}
+.blk-hl{display:flex;align-items:baseline;gap:5px}
+.bln{font-size:19px;font-weight:900;line-height:1}
+.bln.csi{color:var(--ok)}.bln.cci{color:var(--c-500)}.bln.dk{color:#fff}
+.bll{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.bll.csi{color:var(--ok)}.bll.cci{color:var(--c-400)}.bll.dk{color:rgba(255,255,255,.55)}
+.blbadge{padding:2px 6px;border-radius:3px;font-size:7.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.blbadge.exc{background:rgba(255,255,255,.1);color:#90bff5;border:1px solid rgba(144,191,245,.2)}
+.blbadge.std{background:var(--ok-bg);color:var(--ok-dk)}
+.blk-b{padding:6px 11px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--c-100);background:var(--c-50)}
+.blk-b.dk{background:rgba(5,27,48,.45);border-color:rgba(144,191,245,.08)}
+.blk-f{padding:5px 11px;display:flex;align-items:center;gap:5px;font-size:8px;font-weight:600;border-top:1px solid}
+.blk-f.ok{background:var(--ok-bg);color:var(--ok-dk);border-color:rgba(35,164,35,.15)}
+.blk-f.bin{background:var(--amber-bg);color:var(--amber-dk);border-color:rgba(217,119,6,.2)}
+.blk-f.seg{background:var(--blue-950);color:#90bff5;border-color:rgba(144,191,245,.15)}
+/* ── V4 JERARQUÍA ── */
+.jg{margin-bottom:10px}
+.jgl{display:flex;align-items:center;gap:5px;font-size:7.5px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px}
+.jgl::after{content:'';flex:1;height:1px}
+.jgl.gen{color:var(--ok-dk)}.jgl.gen::after{background:rgba(35,164,35,.2)}
+.jgl.bank{color:var(--blue-dk)}.jgl.bank::after{background:rgba(34,111,203,.15)}
+.jgl.cond{color:var(--amber-dk)}.jgl.cond::after{background:rgba(217,119,6,.25)}
+.jrows{border:1px solid var(--c-100);border-radius:9px;overflow:hidden}
+.jrow{padding:7px 10px;border-bottom:1px solid var(--c-100);display:flex;gap:7px;align-items:flex-start}
+.jrow:last-child{border-bottom:none}
+.jrow.exc{background:rgba(5,27,48,.03)}
+.jrn{font-size:14px;font-weight:900;line-height:1;flex-shrink:0;width:20px;text-align:right;padding-top:2px}
+.jrn.csi{color:var(--ok)}.jrn.cci{color:var(--c-400)}.jrn.exc{color:var(--blue)}
+.jrr{flex:1;min-width:0}
+.jrll{font-size:7.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.jrll.csi{color:var(--ok)}.jrll.cci{color:var(--c-500)}.jrll.exc{color:var(--blue)}
+.jrrow{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-bottom:3px}
+/* Transfer section */
+.txf{padding:8px 0 4px;border-top:1px solid var(--c-100);margin-top:4px}
+.txf-r{display:flex;align-items:center;gap:6px;margin-bottom:2px}
+.txf-ic{font-size:13px}.txf-nm{font-size:11px;font-weight:700}
+.txf-sub{font-size:9px;color:var(--c-500);line-height:1.4}
+</style></head><body>
+<header>
+  <h1>Modal "Medios de Pago" — Exploración V2</h1>
+  <p>Por banco rediseñado · V1 Beneficio · V2 Filtros · V3 Bloques · V4 Jerarquía</p>
+</header>
+<nav class="tabs">
+  <button class="active" onclick="showTab('banco',this)">Por banco ✦</button>
+  <button onclick="showTab('beneficio',this)">V1 · Beneficio</button>
+  <button onclick="showTab('filtros',this)">V2 · Filtros</button>
+  <button onclick="showTab('bloques',this)">V3 · Bloques</button>
+  <button onclick="showTab('jerarquia',this)">V4 · Jerarquía</button>
+</nav>
+
+<!-- ═══════════ POR BANCO ═══════════ -->
+<div id="tab-banco" class="section active">
+  <div class="vtag">POR BANCO · REDISEÑADO</div>
+  <div class="stitle">Acordeón bancario — resumen + detalle expandible</div>
+  <div class="desc">
+    Sin "1 cuota" destacada. Cada banco muestra su mejor beneficio colapsado.
+    La restricción Comafi se señala con <strong style="color:#90bff5">🔒</strong> antes de abrir.
+    <ul>
+      <li>Collapsed: logo + nombre + badge mejor beneficio</li>
+      <li>Expanded: beneficio → alcance → condición por fila</li>
+    </ul>
+  </div>
+  <div class="phone"><div class="screen"><div class="modal">
+    <div class="mh"></div>
+    <div class="mhead">
+      <div class="mhrow"><h3>Medios de pago y cuotas</h3><span style="font-size:11px;color:var(--c-400)">✕</span></div>
+      <div class="sub">Por banco · ¿En qué banco tenés cuenta?</div>
+    </div>
+    <div class="mbody">
+      <div class="cat"><span class="cat-icon">💳</span><div><div class="cat-name">Tarjetas de crédito</div><div class="cat-sub">Acreditación instantánea</div></div></div>
+
+      <div class="sdiv">Beneficios sin interés</div>
+
+      <div class="bk">
+        <div class="bk-h" onclick="tog('d-ciudad')">
+          <div class="bk-logo"><img class="bl" src="https://www.figma.com/api/mcp/asset/30a940b1-0174-4f63-a8a1-b2835edfe7d5" alt="Ciudad"></div>
+          <div class="bk-name">Banco Ciudad</div>
+          <div class="bk-badges"><span class="bbd csi">3 CSI</span><span class="chip v">VISA</span></div>
+          <span class="tog">▾</span>
+        </div>
+        <div id="d-ciudad" class="bk-d">
+          <div class="bdr">
+            <div class="bdl1"><span class="bn">3</span><span class="bt-csi">cuotas sin interés</span><span class="chip v">VISA</span></div>
+            <div class="bdl2"><img class="bl" src="https://www.figma.com/api/mcp/asset/30a940b1-0174-4f63-a8a1-b2835edfe7d5" alt="Ciudad"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bk">
+        <div class="bk-h" onclick="tog('d-galicia')">
+          <div class="bk-logo"><img class="bl" src="https://www.figma.com/api/mcp/asset/e4b51e0f-6b60-480f-882d-fa68102a1844" alt="Galicia"></div>
+          <div class="bk-name">Galicia</div>
+          <div class="bk-badges"><span class="bbd csi">3 CSI</span><span class="chip v">VISA</span><span class="chip ax">AMEX</span></div>
+          <span class="tog">▾</span>
+        </div>
+        <div id="d-galicia" class="bk-d">
+          <div class="bdr">
+            <div class="bdl1"><span class="bn">3</span><span class="bt-csi">cuotas sin interés</span></div>
+            <div class="bdl2"><img class="bl" src="https://www.figma.com/api/mcp/asset/e4b51e0f-6b60-480f-882d-fa68102a1844" alt="Galicia"><span class="chip v">VISA</span><span class="chip ax">AMEX</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bk">
+        <div class="bk-h" onclick="tog('d-macro')">
+          <div class="bk-logo"><img class="bl" src="https://www.figma.com/api/mcp/asset/0b44a957-099d-460a-9c35-ed310ed57a31" alt="Macro"></div>
+          <div class="bk-name">Macro</div>
+          <div class="bk-badges"><span class="bbd csi">3 CSI</span><span class="bbd cci">+6 CCI</span></div>
+          <span class="tog">▾</span>
+        </div>
+        <div id="d-macro" class="bk-d">
+          <div class="bdr">
+            <div class="bdl1"><span class="bn">3</span><span class="bt-csi">cuotas sin interés</span></div>
+            <div class="bdl2"><img class="bl" src="https://www.figma.com/api/mcp/asset/0b44a957-099d-460a-9c35-ed310ed57a31" alt="Macro"><span class="chip v">VISA</span></div>
+          </div>
+          <div class="bdr">
+            <div class="bdl1"><span class="bn">6</span><span class="bt-cci">cuotas con interés</span></div>
+            <div class="bdl2"><img class="bl" src="https://www.figma.com/api/mcp/asset/0b44a957-099d-460a-9c35-ed310ed57a31" alt="Macro"><span class="chip v">VISA</span><span class="chip mc">MC</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bk">
+        <div class="bk-h" onclick="tog('d-sant')">
+          <div class="bk-logo"><img class="bl" src="https://www.figma.com/api/mcp/asset/5d9465b3-9d8f-40cd-9644-b1e609b2bed2" alt="Santander"></div>
+          <div class="bk-name">Santander</div>
+          <div class="bk-badges"><span class="bbd csi">3 CSI</span><span class="bbd cci">+6 CCI</span></div>
+          <span class="tog">▾</span>
+        </div>
+        <div id="d-sant" class="bk-d">
+          <div class="bdr">
+            <div class="bdl1"><span class="bn">3</span><span class="bt-csi">cuotas sin interés</span></div>
+            <div class="bdl2"><img class="bl" src="https://www.figma.com/api/mcp/asset/5d9465b3-9d8f-40cd-9644-b1e609b2bed2" alt="Santander"><span class="chip v">VISA</span></div>
+          </div>
+          <div class="bdr">
+            <div class="bdl1"><span class="bn">6</span><span class="bt-cci">cuotas con interés</span></div>
+            <div class="bdl2"><img class="bl" src="https://www.figma.com/api/mcp/asset/5d9465b3-9d8f-40cd-9644-b1e609b2bed2" alt="Santander"><span class="chip v">VISA</span><span class="chip mc">MC</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bk">
+        <div class="bk-h" onclick="tog('d-bbva')">
+          <div class="bk-logo"><img class="bl" src="https://www.figma.com/api/mcp/asset/253bc2cc-1d62-4bd4-8ea4-2d2788267d74" alt="BBVA"></div>
+          <div class="bk-name">BBVA</div>
+          <div class="bk-badges"><span class="bbd csi">3 CSI</span><span class="bbd cci">+6 CCI</span></div>
+          <span class="tog">▾</span>
+        </div>
+        <div id="d-bbva" class="bk-d">
+          <div class="bdr">
+            <div class="bdl1"><span class="bn">3</span><span class="bt-csi">cuotas sin interés</span></div>
+            <div class="bdl2"><img class="bl" src="https://www.figma.com/api/mcp/asset/253bc2cc-1d62-4bd4-8ea4-2d2788267d74" alt="BBVA"><span class="chip v">VISA</span></div>
+          </div>
+          <div class="bdr">
+            <div class="bdl1"><span class="bn">6</span><span class="bt-cci">cuotas con interés</span></div>
+            <div class="bdl2"><img class="bl" src="https://www.figma.com/api/mcp/asset/253bc2cc-1d62-4bd4-8ea4-2d2788267d74" alt="BBVA"><span class="chip v">VISA</span><span class="chip mc">MC</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comafi — has restriction signal -->
+      <div class="bk">
+        <div class="bk-h" onclick="tog('d-comafi')">
+          <div class="bk-logo"><span class="bkt cf">COMAFI</span></div>
+          <div class="bk-name">Comafi</div>
+          <div class="bk-badges"><span class="bbd csi">6 CSI</span><span class="bbd exc">9 🔒</span></div>
+          <span class="tog">▾</span>
+        </div>
+        <div id="d-comafi" class="bk-d">
+          <div class="bdr">
+            <div class="bdl1"><span class="bn">6</span><span class="bt-csi">cuotas sin interés</span><span class="chip v">VISA</span></div>
+            <div class="bdl2"><span class="bkt cf">COMAFI</span></div>
+            <div class="cs ok">✓ Cartera habilitada Comafi</div>
+          </div>
+          <div class="bdr">
+            <div class="bdl1"><span class="bn">9</span><span class="bt-csi">cuotas sin interés</span><span class="chip v">VISA</span></div>
+            <div class="bdl2"><span class="bkt cfb">COMAFI ÚNICO BLACK</span></div>
+            <div class="cs bin">⚠ Solo BINES habilitados</div>
+            <div class="cs seg" style="margin-top:3px">🔒 Exclusivo segmento Black</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sdiv">Solo con interés</div>
+
+      <div class="bk">
+        <div class="bk-h" onclick="tog('d-coop')">
+          <div class="bk-logo"><img class="bl" src="https://www.figma.com/api/mcp/asset/d1f55eab-71f2-4fb3-ba2b-5cf7a42bc174" alt="Credicoop"></div>
+          <div class="bk-name">Credicoop</div>
+          <div class="bk-badges"><span class="bbd cci">3 CCI</span><span class="chip v">VISA</span><span class="chip mc">MC</span></div>
+          <span class="tog">▾</span>
+        </div>
+        <div id="d-coop" class="bk-d">
+          <div class="bdr">
+            <div class="bdl1"><span class="bn">3</span><span class="bt-cci">cuotas con interés</span></div>
+            <div class="bdl2"><img class="bl" src="https://www.figma.com/api/mcp/asset/d1f55eab-71f2-4fb3-ba2b-5cf7a42bc174" alt="Credicoop"><span class="chip v">VISA</span><span class="chip mc">MC</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bk">
+        <div class="bk-h" onclick="tog('d-itau')">
+          <div class="bk-logo"><img class="bl" src="https://www.figma.com/api/mcp/asset/ce7842bd-234a-4fb1-b4f4-935cc448eeb6" alt="Itaú"></div>
+          <div class="bk-name">Itaú</div>
+          <div class="bk-badges"><span class="bbd cci">3 CCI</span><span class="chip v">VISA</span><span class="chip mc">MC</span></div>
+          <span class="tog">▾</span>
+        </div>
+        <div id="d-itau" class="bk-d">
+          <div class="bdr">
+            <div class="bdl1"><span class="bn">3</span><span class="bt-cci">cuotas con interés</span></div>
+            <div class="bdl2"><img class="bl" src="https://www.figma.com/api/mcp/asset/ce7842bd-234a-4fb1-b4f4-935cc448eeb6" alt="Itaú"><span class="chip v">VISA</span><span class="chip mc">MC</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bk">
+        <div class="bk-h" onclick="tog('d-sv')">
+          <div class="bk-logo"><span class="bkt sv">SV</span></div>
+          <div class="bk-name">Supervielle</div>
+          <div class="bk-badges"><span class="bbd cci">3 CCI</span><span class="chip v">VISA</span><span class="chip mc">MC</span></div>
+          <span class="tog">▾</span>
+        </div>
+        <div id="d-sv" class="bk-d">
+          <div class="bdr">
+            <div class="bdl1"><span class="bn">3</span><span class="bt-cci">cuotas con interés</span></div>
+            <div class="bdl2"><span class="bkt sv">SUPERVIELLE</span><span class="chip v">VISA</span><span class="chip mc">MC</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="txf"><div class="txf-r"><span class="txf-ic">🏦</span><span class="txf-nm">Transferencia o Depósito</span></div><div class="txf-sub">La reserva estará vigente 2 horas.</div></div>
+    </div>
+  </div></div></div>
+</div>
+
+<!-- ═══════════ V1 POR BENEFICIO ═══════════ -->
+<div id="tab-beneficio" class="section">
+  <div class="vtag">V1 · POR BENEFICIO</div>
+  <div class="stitle">Agrupado por tipo de financiación</div>
+  <div class="desc">
+    Las cuotas son el dato principal. Bancos y tarjetas como alcance. Condición explícita dentro del mismo bloque.
+    <ul>
+      <li>9 CSI separado de 6 CSI por jerarquía de cantidad</li>
+      <li>Restricción BINES + segmento visible sin expandir</li>
+    </ul>
+  </div>
+  <div class="phone"><div class="screen"><div class="modal">
+    <div class="mh"></div>
+    <div class="mhead">
+      <div class="mhrow"><h3>Medios de pago y cuotas</h3><span style="font-size:11px;color:var(--c-400)">✕</span></div>
+      <div class="sub">Por beneficio</div>
+    </div>
+    <div class="mbody">
+      <div class="cat"><span class="cat-icon">💳</span><div><div class="cat-name">Tarjetas de crédito</div><div class="cat-sub">Acreditación instantánea</div></div></div>
+
+      <div class="sdiv">Sin interés</div>
+
+      <div class="brow">
+        <div class="brl1"><span class="brn">3</span><span class="brcsi">cuotas sin interés</span><span class="chip v">VISA</span></div>
+        <div class="brlogos">
+          <img class="bl" src="https://www.figma.com/api/mcp/asset/30a940b1-0174-4f63-a8a1-b2835edfe7d5" alt="Ciudad">
+          <img class="bl" src="https://www.figma.com/api/mcp/asset/e4b51e0f-6b60-480f-882d-fa68102a1844" alt="Galicia">
+          <img class="bl" src="https://www.figma.com/api/mcp/asset/0b44a957-099d-460a-9c35-ed310ed57a31" alt="Macro">
+          <img class="bl" src="https://www.figma.com/api/mcp/asset/5d9465b3-9d8f-40cd-9644-b1e609b2bed2" alt="Santander">
+          <img class="bl" src="https://www.figma.com/api/mcp/asset/253bc2cc-1d62-4bd4-8ea4-2d2788267d74" alt="BBVA">
+        </div>
+        <div style="display:flex;gap:3px;align-items:center;margin-top:2px"><span class="chip ax">AMEX</span><span style="font-size:8px;color:var(--c-500)">sólo Galicia</span></div>
+      </div>
+
+      <div class="brow">
+        <div class="brl1"><span class="brn">6</span><span class="brcsi">cuotas sin interés</span><span class="chip v">VISA</span></div>
+        <div class="brlogos"><span class="bkt cf">COMAFI</span></div>
+        <div class="cs ok">✓ Cartera habilitada Comafi</div>
+      </div>
+
+      <div class="brow">
+        <div class="brl1"><span class="brn">9</span><span class="brcsi">cuotas sin interés</span><span class="chip v">VISA</span></div>
+        <div class="brlogos"><span class="bkt cfb">COMAFI ÚNICO BLACK</span></div>
+        <div class="cs bin">⚠ Solo BINES habilitados</div>
+        <div class="cs seg" style="margin-top:3px">🔒 Exclusivo segmento Black</div>
+      </div>
+
+      <div class="sdiv">Con interés</div>
+
+      <div class="brow">
+        <div class="brl1"><span class="brn">3</span><span class="brcci">cuotas con interés</span><span class="chip v">VISA</span><span class="chip mc">MC</span></div>
+        <div class="brlogos">
+          <img class="bl" src="https://www.figma.com/api/mcp/asset/d1f55eab-71f2-4fb3-ba2b-5cf7a42bc174" alt="Credicoop">
+          <img class="bl" src="https://www.figma.com/api/mcp/asset/ce7842bd-234a-4fb1-b4f4-935cc448eeb6" alt="Itaú">
+          <span class="bkt sv">SUPERVIELLE</span>
+        </div>
+      </div>
+
+      <div class="brow">
+        <div class="brl1"><span class="brn">6</span><span class="brcci">cuotas con interés</span><span class="chip v">VISA</span><span class="chip mc">MC</span></div>
+        <div class="brlogos">
+          <img class="bl" src="https://www.figma.com/api/mcp/asset/0b44a957-099d-460a-9c35-ed310ed57a31" alt="Macro">
+          <img class="bl" src="https://www.figma.com/api/mcp/asset/5d9465b3-9d8f-40cd-9644-b1e609b2bed2" alt="Santander">
+          <img class="bl" src="https://www.figma.com/api/mcp/asset/253bc2cc-1d62-4bd4-8ea4-2d2788267d74" alt="BBVA">
+        </div>
+      </div>
+
+      <div class="txf"><div class="txf-r"><span class="txf-ic">🏦</span><span class="txf-nm">Transferencia o Depósito</span></div><div class="txf-sub">Reserva vigente 2 horas.</div></div>
+    </div>
+  </div></div></div>
+</div>
+
+<!-- ═══════════ V2 FILTROS ═══════════ -->
+<div id="tab-filtros" class="section">
+  <div class="vtag">V2 · FILTROS</div>
+  <div class="stitle">Vista general con filtros funcionales</div>
+  <div class="desc">
+    Filtros por tipo (sin/con interés) y por red de tarjeta. Las condiciones especiales permanecen visibles en cualquier filtro activo.
+    <ul><li>Comafi 9 CSI siempre muestra sus restricciones</li></ul>
+  </div>
+  <div class="phone"><div class="screen"><div class="modal">
+    <div class="mh"></div>
+    <div class="mhead">
+      <div class="mhrow"><h3>Medios de pago y cuotas</h3><span style="font-size:11px;color:var(--c-400)">✕</span></div>
+    </div>
+    <div class="mbody">
+      <div class="cat"><span class="cat-icon">💳</span><div><div class="cat-name">Tarjetas de crédito</div><div class="cat-sub">Acreditación instantánea</div></div></div>
+      <!-- Filters -->
+      <div class="fwrap">
+        <div class="flbl">Tipo</div>
+        <div class="fgrp">
+          <button class="fch active" data-fg="tipo" data-fv="all" onclick="filt(this)">Todos</button>
+          <button class="fch" data-fg="tipo" data-fv="csi" onclick="filt(this)">Sin interés</button>
+          <button class="fch" data-fg="tipo" data-fv="cci" onclick="filt(this)">Con interés</button>
+        </div>
+        <div class="flbl" style="margin-top:5px">Tarjeta</div>
+        <div class="fgrp">
+          <button class="fch active" data-fg="red" data-fv="all" onclick="filt(this)">Todas</button>
+          <button class="fch" data-fg="red" data-fv="v" onclick="filt(this)">VISA</button>
+          <button class="fch" data-fg="red" data-fv="mc" onclick="filt(this)">MC</button>
+          <button class="fch" data-fg="red" data-fv="ax" onclick="filt(this)">AMEX</button>
+        </div>
+      </div>
+      <!-- Rows -->
+      <div id="v2-list">
+        <div class="frow" data-tipo="csi" data-red="v">
+          <div class="frl1"><span class="frn">3</span><span class="frcsi">cuotas sin interés</span><span class="chip v">VISA</span></div>
+          <div class="frbanks">
+            <img class="bl" src="https://www.figma.com/api/mcp/asset/30a940b1-0174-4f63-a8a1-b2835edfe7d5" alt="Ciudad">
+            <img class="bl" src="https://www.figma.com/api/mcp/asset/0b44a957-099d-460a-9c35-ed310ed57a31" alt="Macro">
+            <img class="bl" src="https://www.figma.com/api/mcp/asset/5d9465b3-9d8f-40cd-9644-b1e609b2bed2" alt="Santander">
+            <img class="bl" src="https://www.figma.com/api/mcp/asset/253bc2cc-1d62-4bd4-8ea4-2d2788267d74" alt="BBVA">
+          </div>
+        </div>
+        <div class="frow" data-tipo="csi" data-red="v ax">
+          <div class="frl1"><span class="frn">3</span><span class="frcsi">cuotas sin interés</span><span class="chip v">VISA</span><span class="chip ax">AMEX</span></div>
+          <div class="frbanks"><img class="bl" src="https://www.figma.com/api/mcp/asset/e4b51e0f-6b60-480f-882d-fa68102a1844" alt="Galicia"></div>
+        </div>
+        <div class="frow" data-tipo="csi" data-red="v">
+          <div class="frl1"><span class="frn">6</span><span class="frcsi">cuotas sin interés</span><span class="chip v">VISA</span></div>
+          <div class="frbanks"><span class="bkt cf">COMAFI</span></div>
+          <div class="cs ok" style="margin-top:3px">✓ Cartera habilitada Comafi</div>
+        </div>
+        <div class="frow" data-tipo="csi" data-red="v">
+          <div class="frl1"><span class="frn">9</span><span class="frcsi">cuotas sin interés</span><span class="chip v">VISA</span></div>
+          <div class="frbanks"><span class="bkt cfb">COMAFI ÚNICO BLACK</span></div>
+          <div class="cs bin" style="margin-top:3px">⚠ Solo BINES habilitados</div>
+          <div class="cs seg" style="margin-top:3px">🔒 Exclusivo segmento Black</div>
+        </div>
+        <div class="frow" data-tipo="cci" data-red="v mc">
+          <div class="frl1"><span class="frn">3</span><span class="frcci">cuotas con interés</span><span class="chip v">VISA</span><span class="chip mc">MC</span></div>
+          <div class="frbanks">
+            <img class="bl" src="https://www.figma.com/api/mcp/asset/d1f55eab-71f2-4fb3-ba2b-5cf7a42bc174" alt="Credicoop">
+            <img class="bl" src="https://www.figma.com/api/mcp/asset/ce7842bd-234a-4fb1-b4f4-935cc448eeb6" alt="Itaú">
+            <span class="bkt sv">SUPERVIELLE</span>
+          </div>
+        </div>
+        <div class="frow" data-tipo="cci" data-red="v mc">
+          <div class="frl1"><span class="frn">6</span><span class="frcci">cuotas con interés</span><span class="chip v">VISA</span><span class="chip mc">MC</span></div>
+          <div class="frbanks">
+            <img class="bl" src="https://www.figma.com/api/mcp/asset/0b44a957-099d-460a-9c35-ed310ed57a31" alt="Macro">
+            <img class="bl" src="https://www.figma.com/api/mcp/asset/5d9465b3-9d8f-40cd-9644-b1e609b2bed2" alt="Santander">
+            <img class="bl" src="https://www.figma.com/api/mcp/asset/253bc2cc-1d62-4bd4-8ea4-2d2788267d74" alt="BBVA">
+          </div>
+        </div>
+      </div>
+      <div class="txf"><div class="txf-r"><span class="txf-ic">🏦</span><span class="txf-nm">Transferencia o Depósito</span></div><div class="txf-sub">Reserva vigente 2 horas.</div></div>
+    </div>
+  </div></div></div>
+</div>
+
+<!-- ═══════════ V3 BLOQUES ═══════════ -->
+<div id="tab-bloques" class="section">
+  <div class="vtag">V3 · BLOQUES MODULARES</div>
+  <div class="stitle">Cada promo como módulo independiente</div>
+  <div class="desc">
+    Estructura fija: header (beneficio) → body (alcance) → footer (condición si aplica). La restricción no es un footnote: es una sección del bloque con el mismo peso visual.
+    <ul><li>Bloque Comafi 9 CSI: header oscuro + footer ámbar</li></ul>
+  </div>
+  <div class="phone"><div class="screen"><div class="modal">
+    <div class="mh"></div>
+    <div class="mhead">
+      <div class="mhrow"><h3>Medios de pago y cuotas</h3><span style="font-size:11px;color:var(--c-400)">✕</span></div>
+    </div>
+    <div class="mbody">
+      <div class="cat"><span class="cat-icon">💳</span><div><div class="cat-name">Tarjetas de crédito</div><div class="cat-sub">Acreditación instantánea</div></div></div>
+
+      <div class="blk">
+        <div class="blk-h">
+          <div class="blk-hl"><span class="bln csi">3</span><span class="bll csi">cuotas sin interés</span></div>
+          <span class="chip v">VISA</span>
+        </div>
+        <div class="blk-b">
+          <img class="bl" src="https://www.figma.com/api/mcp/asset/30a940b1-0174-4f63-a8a1-b2835edfe7d5" alt="Ciudad">
+          <img class="bl" src="https://www.figma.com/api/mcp/asset/e4b51e0f-6b60-480f-882d-fa68102a1844" alt="Galicia">
+          <img class="bl" src="https://www.figma.com/api/mcp/asset/0b44a957-099d-460a-9c35-ed310ed57a31" alt="Macro">
+          <img class="bl" src="https://www.figma.com/api/mcp/asset/5d9465b3-9d8f-40cd-9644-b1e609b2bed2" alt="Santander">
+          <img class="bl" src="https://www.figma.com/api/mcp/asset/253bc2cc-1d62-4bd4-8ea4-2d2788267d74" alt="BBVA">
+          <span class="chip ax">AMEX</span>
+        </div>
+      </div>
+
+      <div class="blk">
+        <div class="blk-h">
+          <div class="blk-hl"><span class="bln csi">6</span><span class="bll csi">cuotas sin interés</span></div>
+          <div style="display:flex;align-items:center;gap:4px"><span class="chip v">VISA</span><span class="blbadge std">Comafi</span></div>
+        </div>
+        <div class="blk-b"><span class="bkt cf">COMAFI</span></div>
+        <div class="blk-f ok">✓ Cartera habilitada Comafi</div>
+      </div>
+
+      <!-- Comafi 9 — dark + restricted -->
+      <div class="blk sp">
+        <div class="blk-h dark">
+          <div class="blk-hl"><span class="bln dk">9</span><span class="bll dk">cuotas sin interés</span></div>
+          <div style="display:flex;align-items:center;gap:4px"><span class="chip v">VISA</span><span class="blbadge exc">🔒 Exclusivo</span></div>
+        </div>
+        <div class="blk-b dk"><span class="bkt cfb">COMAFI ÚNICO BLACK</span></div>
+        <div class="blk-f bin">⚠ Solo BINES habilitados</div>
+        <div class="blk-f seg" style="border-top:none">🔒 Exclusivo segmento Black</div>
+      </div>
+
+      <div class="blk">
+        <div class="blk-h">
+          <div class="blk-hl"><span class="bln cci">3</span><span class="bll cci">cuotas con interés</span></div>
+          <div style="display:flex;gap:3px"><span class="chip v">VISA</span><span class="chip mc">MC</span></div>
+        </div>
+        <div class="blk-b">
+          <img class="bl" src="https://www.figma.com/api/mcp/asset/d1f55eab-71f2-4fb3-ba2b-5cf7a42bc174" alt="Credicoop">
+          <img class="bl" src="https://www.figma.com/api/mcp/asset/ce7842bd-234a-4fb1-b4f4-935cc448eeb6" alt="Itaú">
+          <span class="bkt sv">SUPERVIELLE</span>
+        </div>
+      </div>
+
+      <div class="blk">
+        <div class="blk-h">
+          <div class="blk-hl"><span class="bln cci">6</span><span class="bll cci">cuotas con interés</span></div>
+          <div style="display:flex;gap:3px"><span class="chip v">VISA</span><span class="chip mc">MC</span></div>
+        </div>
+        <div class="blk-b">
+          <img class="bl" src="https://www.figma.com/api/mcp/asset/0b44a957-099d-460a-9c35-ed310ed57a31" alt="Macro">
+          <img class="bl" src="https://www.figma.com/api/mcp/asset/5d9465b3-9d8f-40cd-9644-b1e609b2bed2" alt="Santander">
+          <img class="bl" src="https://www.figma.com/api/mcp/asset/253bc2cc-1d62-4bd4-8ea4-2d2788267d74" alt="BBVA">
+        </div>
+      </div>
+
+      <div class="txf"><div class="txf-r"><span class="txf-ic">🏦</span><span class="txf-nm">Transferencia o Depósito</span></div><div class="txf-sub">Reserva vigente 2 horas.</div></div>
+    </div>
+  </div></div></div>
+</div>
+
+<!-- ═══════════ V4 JERARQUÍA ═══════════ -->
+<div id="tab-jerarquia" class="section">
+  <div class="vtag">V4 · JERARQUÍA</div>
+  <div class="stitle">Separación por nivel de universalidad</div>
+  <div class="desc">
+    Tres grupos estructurales: para todos / por banco / con condición especial. Comafi 9 CSI solo puede estar en "Condición especial" — imposible confundirlo con 6 CSI.
+    <ul>
+      <li>La sección de condición especial tiene tratamiento visual diferenciado</li>
+      <li>El sistema es escalable a cualquier restricción futura</li>
+    </ul>
+  </div>
+  <div class="phone"><div class="screen"><div class="modal">
+    <div class="mh"></div>
+    <div class="mhead">
+      <div class="mhrow"><h3>Medios de pago y cuotas</h3><span style="font-size:11px;color:var(--c-400)">✕</span></div>
+    </div>
+    <div class="mbody">
+      <div class="cat"><span class="cat-icon">💳</span><div><div class="cat-name">Tarjetas de crédito</div><div class="cat-sub">Acreditación instantánea</div></div></div>
+
+      <!-- Para todos -->
+      <div class="jg">
+        <div class="jgl gen">Para todos los bancos</div>
+        <div class="jrows">
+          <div class="jrow">
+            <span class="jrn csi">1</span>
+            <div class="jrr">
+              <div class="jrll csi">cuota · sin recargo</div>
+              <div class="jrrow"><span class="chip v">VISA</span><span class="chip mc">MC</span><span class="chip ax">AMEX</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Por banco -->
+      <div class="jg">
+        <div class="jgl bank">Bancos adheridos</div>
+        <div class="jrows">
+          <div class="jrow">
+            <span class="jrn csi">3</span>
+            <div class="jrr">
+              <div class="jrll csi">cuotas sin interés</div>
+              <div class="jrrow">
+                <img class="bl" src="https://www.figma.com/api/mcp/asset/30a940b1-0174-4f63-a8a1-b2835edfe7d5" alt="Ciudad">
+                <img class="bl" src="https://www.figma.com/api/mcp/asset/e4b51e0f-6b60-480f-882d-fa68102a1844" alt="Galicia">
+                <img class="bl" src="https://www.figma.com/api/mcp/asset/0b44a957-099d-460a-9c35-ed310ed57a31" alt="Macro">
+                <img class="bl" src="https://www.figma.com/api/mcp/asset/5d9465b3-9d8f-40cd-9644-b1e609b2bed2" alt="Santander">
+                <img class="bl" src="https://www.figma.com/api/mcp/asset/253bc2cc-1d62-4bd4-8ea4-2d2788267d74" alt="BBVA">
+                <span class="chip v">VISA</span>
+              </div>
+            </div>
+          </div>
+          <div class="jrow">
+            <span class="jrn csi">6</span>
+            <div class="jrr">
+              <div class="jrll csi">cuotas sin interés</div>
+              <div class="jrrow"><span class="bkt cf">COMAFI</span><span class="chip v">VISA</span></div>
+              <div class="cs ok" style="margin-top:2px">✓ Cartera habilitada</div>
+            </div>
+          </div>
+          <div class="jrow">
+            <span class="jrn cci">3</span>
+            <div class="jrr">
+              <div class="jrll cci">cuotas con interés</div>
+              <div class="jrrow">
+                <img class="bl" src="https://www.figma.com/api/mcp/asset/d1f55eab-71f2-4fb3-ba2b-5cf7a42bc174" alt="Credicoop">
+                <img class="bl" src="https://www.figma.com/api/mcp/asset/ce7842bd-234a-4fb1-b4f4-935cc448eeb6" alt="Itaú">
+                <span class="bkt sv">SV</span>
+                <span class="chip v">VISA</span><span class="chip mc">MC</span>
+              </div>
+            </div>
+          </div>
+          <div class="jrow">
+            <span class="jrn cci">6</span>
+            <div class="jrr">
+              <div class="jrll cci">cuotas con interés</div>
+              <div class="jrrow">
+                <img class="bl" src="https://www.figma.com/api/mcp/asset/0b44a957-099d-460a-9c35-ed310ed57a31" alt="Macro">
+                <img class="bl" src="https://www.figma.com/api/mcp/asset/5d9465b3-9d8f-40cd-9644-b1e609b2bed2" alt="Santander">
+                <img class="bl" src="https://www.figma.com/api/mcp/asset/253bc2cc-1d62-4bd4-8ea4-2d2788267d74" alt="BBVA">
+                <span class="chip v">VISA</span><span class="chip mc">MC</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Condición especial -->
+      <div class="jg">
+        <div class="jgl cond">Con condición especial</div>
+        <div class="jrows" style="border-color:rgba(217,119,6,.25)">
+          <div class="jrow exc">
+            <span class="jrn exc">9</span>
+            <div class="jrr">
+              <div class="jrll exc">cuotas sin interés</div>
+              <div class="jrrow"><span class="bkt cfb">COMAFI ÚNICO BLACK</span><span class="chip v">VISA</span></div>
+              <div class="cs bin" style="margin-top:2px">⚠ Solo BINES habilitados</div>
+              <div class="cs seg" style="margin-top:3px">🔒 Exclusivo segmento Black</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="txf"><div class="txf-r"><span class="txf-ic">🏦</span><span class="txf-nm">Transferencia o Depósito</span></div><div class="txf-sub">Reserva vigente 2 horas.</div></div>
+    </div>
+  </div></div></div>
+</div>
+
+<script>
+var fState={tipo:'all',red:'all'};
+function showTab(id,btn){
+  document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active')});
+  document.querySelectorAll('nav.tabs button').forEach(function(b){b.classList.remove('active')});
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+function tog(id){
+  var d=document.getElementById(id);
+  var h=d.previousElementSibling;
+  var t=h.querySelector('.tog');
+  var open=d.classList.toggle('open');
+  t.style.transform=open?'rotate(180deg)':'';
+}
+function filt(btn){
+  var fg=btn.dataset.fg,fv=btn.dataset.fv;
+  fState[fg]=fv;
+  btn.closest('.fgrp').querySelectorAll('.fch').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  document.querySelectorAll('#v2-list .frow').forEach(function(row){
+    var tipoOk=fState.tipo==='all'||row.dataset.tipo===fState.tipo;
+    var redOk=fState.red==='all'||(row.dataset.red&&row.dataset.red.indexOf(fState.red)>-1);
+    row.style.display=(tipoOk&&redOk)?'':'none';
+  });
+}
+</script>
+</body></html>
