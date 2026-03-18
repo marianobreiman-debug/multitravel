@@ -5,13 +5,15 @@ import { Header } from '@/components/home/Header';
 import { HeroSearch } from '@/components/home/HeroSearch';
 import { PageTransition } from '@/components/home/PageTransition';
 import { HotelCityLanding } from '@/components/home/alojamientos/HotelCityLanding';
+import { VerticalCrossSell } from '@/components/home/VerticalCrossSell';
 import pageStyles from '@/components/home/vuelos/vuelos.module.css';
 
-interface Props { params: { country: string; city: string } }
+interface Props { params: Promise<{ country: string; city: string }> }
 
 export async function generateMetadata({ params }: Props) {
-  const city    = getHotelCity(params.country, params.city);
-  const country = getHotelCountry(params.country);
+  const { country: countryParam, city: cityParam } = await params;
+  const city    = getHotelCity(countryParam, cityParam);
+  const country = getHotelCountry(countryParam);
   if (!city || !country) return {};
   return {
     title: `Hoteles en ${city.name}, ${country.name} — Multitravel.com`,
@@ -19,14 +21,13 @@ export async function generateMetadata({ params }: Props) {
   };
 }
 
-export default function HotelCityPage({ params }: Props) {
-  const country = getHotelCountry(params.country);
-  const city    = getHotelCity(params.country, params.city);
+export default async function HotelCityPage({ params }: Props) {
+  const { country: countryParam, city: cityParam } = await params;
+  const country = getHotelCountry(countryParam);
+  const city    = getHotelCity(countryParam, cityParam);
   if (!country || !city) notFound();
 
-  const hotels = getHotelsByCity(params.country, params.city);
-
-  // Use city image as hero
+  const hotels  = getHotelsByCity(countryParam, cityParam);
   const heroImg = city.image.replace('w=600', 'w=1400');
 
   return (
@@ -41,18 +42,30 @@ export default function HotelCityPage({ params }: Props) {
       />
 
       <PageTransition>
-        <main className={pageStyles.pageMain}>
-          {/* Breadcrumb trail */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 40, flexWrap: 'wrap' }}>
-            <a href="/home" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400, fontSize: 13, color: '#8D8D8D', textDecoration: 'none' }}>Inicio</a>
-            <span style={{ color: '#CACACA', fontSize: 13 }}>›</span>
-            <a href={`/home/alojamientos/${params.country}`} style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400, fontSize: 13, color: '#226FCB', textDecoration: 'none' }}>Hoteles en {country.name}</a>
-            <span style={{ color: '#CACACA', fontSize: 13 }}>›</span>
-            <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 500, fontSize: 13, color: '#272626' }}>Hoteles en {city.name}</span>
-          </div>
+        <>
+          <main className={pageStyles.pageMain}>
+            {/* Breadcrumb trail */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 40, flexWrap: 'wrap' }}>
+              <a href="/home" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400, fontSize: 13, color: '#8D8D8D', textDecoration: 'none' }}>Inicio</a>
+              <span style={{ color: '#CACACA', fontSize: 13 }}>›</span>
+              <a href={`/home/alojamientos/${countryParam}`} style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400, fontSize: 13, color: '#226FCB', textDecoration: 'none' }}>Hoteles en {country.name}</a>
+              <span style={{ color: '#CACACA', fontSize: 13 }}>›</span>
+              <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 500, fontSize: 13, color: '#272626' }}>Hoteles en {city.name}</span>
+            </div>
 
-          <HotelCityLanding country={country} city={city} hotels={hotels} />
-        </main>
+            <HotelCityLanding country={country} city={city} hotels={hotels} />
+          </main>
+
+          {/* Cross-sell: invitar a ver vuelos a la misma ciudad */}
+          <VerticalCrossSell
+            currentVertical="alojamientos"
+            countrySlug={countryParam}
+            countryName={country.name}
+            citySlug={cityParam}
+            cityName={city.name}
+            heroImage={heroImg}
+          />
+        </>
       </PageTransition>
     </div>
   );

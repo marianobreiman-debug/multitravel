@@ -6,14 +6,16 @@ import { HeroSearch } from '@/components/home/HeroSearch';
 import { FlightDateCards } from '@/components/home/vuelos/FlightDateCards';
 import { DestinationContent } from '@/components/home/vuelos/DestinationContent';
 import { PageTransition } from '@/components/home/PageTransition';
+import { VerticalCrossSell } from '@/components/home/VerticalCrossSell';
 import pageStyles from '@/components/home/vuelos/vuelos.module.css';
 
 interface Props {
-  params: { slug: string; destinationSlug: string };
+  params: Promise<{ slug: string; destinationSlug: string }>;
 }
 
 export async function generateMetadata({ params }: Props) {
-  const dest = getDestination(params.slug, params.destinationSlug);
+  const { slug, destinationSlug } = await params;
+  const dest = getDestination(slug, destinationSlug);
   if (!dest) return {};
   return {
     title: `${dest.pageTitle} — Multitravel.com`,
@@ -21,16 +23,16 @@ export async function generateMetadata({ params }: Props) {
   };
 }
 
-export default function VuelosDestinationPage({ params }: Props) {
-  const dest    = getDestination(params.slug, params.destinationSlug);
-  const country = getCountry(params.slug);
+export default async function VuelosDestinationPage({ params }: Props) {
+  const { slug, destinationSlug } = await params;
+  const dest    = getDestination(slug, destinationSlug);
+  const country = getCountry(slug);
   if (!dest) notFound();
 
   return (
     <div style={{ minHeight: '100vh', background: '#F4F6F8', fontFamily: "'Outfit', sans-serif" }}>
       <Header />
 
-      {/* Same HeroSearch — destination image, pre-filled origin + destination, 4-level breadcrumb */}
       <HeroSearch
         heroImage={dest.heroImage}
         initialOrigin="Buenos Aires"
@@ -41,51 +43,63 @@ export default function VuelosDestinationPage({ params }: Props) {
       />
 
       <PageTransition>
-        <main className={pageStyles.pageMain}>
-          {/* Back links */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 40 }}>
-            <a
-              href="/home"
-              style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400, fontSize: 13, color: '#8D8D8D', textDecoration: 'none' }}
-            >
-              Inicio
-            </a>
-            <span style={{ color: '#CACACA', fontSize: 13 }}>›</span>
-            <a
-              href={`/home/vuelos/${dest.countrySlug}`}
-              style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400, fontSize: 13, color: '#226FCB', textDecoration: 'none' }}
-            >
-              Vuelos a {dest.country}
-            </a>
-            <span style={{ color: '#CACACA', fontSize: 13 }}>›</span>
-            <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 500, fontSize: 13, color: '#272626' }}>
-              {dest.destination}
-            </span>
-          </div>
+        <>
+          <main className={pageStyles.pageMain}>
+            {/* Breadcrumb trail */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 40 }}>
+              <a
+                href="/home"
+                style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400, fontSize: 13, color: '#8D8D8D', textDecoration: 'none' }}
+              >
+                Inicio
+              </a>
+              <span style={{ color: '#CACACA', fontSize: 13 }}>›</span>
+              <a
+                href={`/home/vuelos/${dest.countrySlug}`}
+                style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400, fontSize: 13, color: '#226FCB', textDecoration: 'none' }}
+              >
+                Vuelos a {dest.country}
+              </a>
+              <span style={{ color: '#CACACA', fontSize: 13 }}>›</span>
+              <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 500, fontSize: 13, color: '#272626' }}>
+                {dest.destination}
+              </span>
+            </div>
 
-          {/* Section title */}
-          <div style={{ marginBottom: 32 }}>
-            <h2
-              style={{
-                fontFamily:    "'Outfit', sans-serif",
-                fontWeight:    700,
-                fontSize:      24,
-                lineHeight:    '32px',
-                letterSpacing: '-0.24px',
-                color:         '#272626',
-                margin:        '0 0 6px',
-              }}
-            >
-              Opciones de fechas disponibles
-            </h2>
-            <p style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400, fontSize: 15, color: '#8D8D8D', margin: 0 }}>
-              Encontramos {dest.flightOffers.length} opciones de vuelo hacia {dest.destination}. Elegí la fecha que mejor se adapte a tu viaje.
-            </p>
-          </div>
+            {/* Section title */}
+            <div style={{ marginBottom: 32 }}>
+              <h2
+                style={{
+                  fontFamily:    "'Outfit', sans-serif",
+                  fontWeight:    700,
+                  fontSize:      24,
+                  lineHeight:    '32px',
+                  letterSpacing: '-0.24px',
+                  color:         '#272626',
+                  margin:        '0 0 6px',
+                }}
+              >
+                Opciones de fechas disponibles
+              </h2>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400, fontSize: 15, color: '#8D8D8D', margin: 0 }}>
+                Encontramos {dest.flightOffers.length} opciones de vuelo hacia {dest.destination}. Elegí la fecha que mejor se adapte a tu viaje.
+              </p>
+            </div>
 
-          <FlightDateCards offers={dest.flightOffers} destination={dest.destination} />
-          <DestinationContent content={dest.content} destination={dest.destination} />
-        </main>
+            <FlightDateCards offers={dest.flightOffers} destination={dest.destination} />
+            <DestinationContent content={dest.content} destination={dest.destination} />
+          </main>
+
+          {/* Cross-sell: invitar a ver alojamientos en la misma ciudad */}
+          <VerticalCrossSell
+            currentVertical="vuelos"
+            countrySlug={slug}
+            countryName={dest.country}
+            citySlug={destinationSlug}
+            cityName={dest.destination}
+            heroImage={dest.heroImage}
+          />
+        </>
       </PageTransition>
     </div>
   );
